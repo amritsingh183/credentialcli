@@ -1,8 +1,8 @@
 package main
 
 import (
+	"amritsingh183/credentialcli/cmd/credential/password"
 	"os"
-	"passgen/cmd/credential/password"
 
 	"github.com/spf13/cobra"
 )
