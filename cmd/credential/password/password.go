@@ -109,7 +109,6 @@ func runPasswordGenerator(cmd *cobra.Command, args []string) error {
 	logger.Println("givenPasswordLength", passwordLength)
 	logger.Println("passwordCount", passwordCount)
 	logger.Println("shouldIncludeSpecialChars", includeSpecialChars)
-
 	myPg := PasswordOptions{
 		length:              passwordLength,
 		includeSpecialChars: includeSpecialChars,
@@ -117,6 +116,9 @@ func runPasswordGenerator(cmd *cobra.Command, args []string) error {
 	}
 	if passwordLength > MaxPasswordLength {
 		return fmt.Errorf("the max length should not exceed %d", MaxPasswordLength)
+	}
+	if passwordCount > MaxPasswordCount {
+		return fmt.Errorf("the max count should not exceed %d", MaxPasswordCount)
 	}
 	var humanReadableDestName string
 

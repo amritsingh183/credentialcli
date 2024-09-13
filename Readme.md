@@ -25,6 +25,9 @@ To generate a password run the following command
 ### Available options for generating passwords
 
 - Length of the password(s) can be specified using the `length 8` flag
+- To dump the password(s) to console set `output=0`
+- To dump the password(s) to file set `output=1` and set filepath using `file=/your/filepath`
+- To control the number of passwords use `count=20` for example
 - If you want to include special characters in your passwords(recommended) use the `includeSpecialCharacters true` flag
 
 ## How to run/test it without installing
