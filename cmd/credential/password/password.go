@@ -15,7 +15,7 @@ import (
 var (
 	// Cmd uses a parent cobra.Command to invoke the run function when subcommand `password` is issued
 	Cmd = &cobra.Command{
-		Use:     fmt.Sprintf("password [-h] [-v] [%s] [%s] [%s]", FlagNameLength, FlagNameIncludeSpecialCharacters, FlagNameOutput),
+		Use:     fmt.Sprintf("password [-h] [-v] [%s] [%s] [%s] [%s] [%s]", FlagNameLength, FlagNameIncludeSpecialCharacters, FlagNameOutput, FlagNamePasswordCount, FlagNameFilePath),
 		Aliases: []string{"pass"},
 		Short:   "generate secure passwords",
 		RunE:    runPasswordGenerator,
