@@ -21,6 +21,7 @@ var (
 		RunE:    runPasswordGenerator,
 	}
 	passwordLength      uint
+	passwordCount       uint
 	includeSpecialChars bool
 	destination         uint
 	destinationFilePath string
@@ -33,16 +34,19 @@ const (
 
 const (
 	DefaultPasswordLength      = 7
+	DefaultPasswordCount       = 1
 	DefaultIncludeSpecialChars = true
 	DefaultOutput              = ToStdOut
 	DefaultFilePath            = "./passwords.txt"
 
 	MaxPasswordLength = 100
+	MaxPasswordCount  = 100
 
 	FlagNameLength                   = "length"
 	FlagNameIncludeSpecialCharacters = "includeSpecialCharacters"
 	FlagNameOutput                   = "output"
 	FlagNameFilePath                 = "file"
+	FlagNamePasswordCount            = "count"
 )
 
 type PasswordGenerator interface {
@@ -52,15 +56,17 @@ type PasswordGenerator interface {
 
 type PasswordOptions struct {
 	length              uint
+	count               uint
 	includeSpecialChars bool
 	destination         io.Writer
 }
 
 func (pg *PasswordOptions) Generate() {
-	bytePassword := util.GenerateKey(int(pg.length), pg.includeSpecialChars)
-	stringPassword := *(*string)(unsafe.Pointer(&bytePassword))
-	pg.destination.Write([]byte(stringPassword))
-	pg.destination.Write([]byte("\n"))
+	for i := 0; i < int(pg.count); i = i + 1 {
+		bytePassword := util.GenerateKey(int(pg.length), pg.includeSpecialChars)
+		stringPassword := *(*string)(unsafe.Pointer(&bytePassword))
+		pg.destination.Write([]byte(stringPassword + "\n"))
+	}
 }
 
 func init() {
@@ -70,6 +76,12 @@ func init() {
 		FlagNameLength,
 		DefaultPasswordLength,
 		fmt.Sprintf("How long the passwords should be? (max limit %d)", MaxPasswordLength),
+	)
+	Cmd.Flags().UintVar(
+		&passwordCount,
+		FlagNamePasswordCount,
+		DefaultPasswordCount,
+		fmt.Sprintf("How many passwords to generate? (max limit %d)", MaxPasswordCount),
 	)
 	Cmd.Flags().BoolVar(
 		&includeSpecialChars,
@@ -95,11 +107,13 @@ func runPasswordGenerator(cmd *cobra.Command, args []string) error {
 	log.Println("running the PasswordGenerator")
 	logger := log.New(cmd.OutOrStdout(), "creds: ", log.Ldate|log.Ltime|log.LUTC)
 	logger.Println("givenPasswordLength", passwordLength)
+	logger.Println("passwordCount", passwordCount)
 	logger.Println("shouldIncludeSpecialChars", includeSpecialChars)
 
 	myPg := PasswordOptions{
 		length:              passwordLength,
 		includeSpecialChars: includeSpecialChars,
+		count:               passwordCount,
 	}
 	if passwordLength > MaxPasswordLength {
 		return fmt.Errorf("the max length should not exceed %d", MaxPasswordLength)
