@@ -4,6 +4,12 @@ This CLI utility exposes the following commands which can be used to generate cr
 
 ## How to install or create binaries
 
+make sure that you have feteched all tags from the git repo.
+
+```shell
+git fetch --all --tags
+```
+
 To install, simply run
 
 ```shell
