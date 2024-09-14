@@ -17,7 +17,7 @@ To build binaries for distribution, simply run
 ```shell
 make binary
 ```
-This will create binaries from Darwin-linux, Linux-amd64, Linux-arm64 in `./out/bin`
+This will create binaries for Darwin-linux, Linux-amd64, Linux-arm64 in `./out/bin`
 
 ## How to run tests
 
