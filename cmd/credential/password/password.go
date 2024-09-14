@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	// Cmd uses a parent cobra.Command to invoke the run function when subcommand `password` is issued
-	Cmd = &cobra.Command{
+	// PasswordCmd uses a parent cobra.Command to invoke the run function when
+	// subcommand `password` is issued
+	PasswordCmd = &cobra.Command{
 		Use:     fmt.Sprintf("password [-h] [-v] [%s] [%s] [%s] [%s] [%s]", FlagNameLength, FlagNameIncludeSpecialCharacters, FlagNameOutput, FlagNamePasswordCount, FlagNameFilePath),
 		Aliases: []string{"pass"},
 		Short:   "generate secure passwords",
@@ -22,8 +23,10 @@ var (
 	}
 	passwordLength      uint
 	passwordCount       uint
+	mustBeUrlSafe       bool
 	includeSpecialChars bool
 	destination         uint
+	outputDevice        io.Writer
 	destinationFilePath string
 )
 
@@ -36,6 +39,7 @@ const (
 	DefaultPasswordLength      = 7
 	DefaultPasswordCount       = 1
 	DefaultIncludeSpecialChars = true
+	DefaultMustBeUrlSafe       = false
 	DefaultOutput              = ToStdOut
 	DefaultFilePath            = "./passwords.txt"
 
@@ -44,58 +48,46 @@ const (
 
 	FlagNameLength                   = "length"
 	FlagNameIncludeSpecialCharacters = "includeSpecialCharacters"
+	FlagNameMustBeUrlSafe            = "urlSafe"
 	FlagNameOutput                   = "output"
 	FlagNameFilePath                 = "file"
 	FlagNamePasswordCount            = "count"
 )
 
-type PasswordGenerator interface {
-	Write(io.Writer) error
-	Generate(int) string
-}
-
-type PasswordOptions struct {
-	length              uint
-	count               uint
-	includeSpecialChars bool
-	destination         io.Writer
-}
-
-func (pg *PasswordOptions) Generate() {
-	for i := 0; i < int(pg.count); i = i + 1 {
-		bytePassword := util.GenerateKey(int(pg.length), pg.includeSpecialChars)
-		stringPassword := *(*string)(unsafe.Pointer(&bytePassword))
-		pg.destination.Write([]byte(stringPassword + "\n"))
-	}
-}
-
 func init() {
 	// Local flags that are only available to this command.
-	Cmd.Flags().UintVar(
+	PasswordCmd.Flags().UintVar(
 		&passwordLength,
 		FlagNameLength,
 		DefaultPasswordLength,
 		fmt.Sprintf("How long the passwords should be? (max limit %d)", MaxPasswordLength),
 	)
-	Cmd.Flags().UintVar(
+	PasswordCmd.Flags().UintVar(
 		&passwordCount,
 		FlagNamePasswordCount,
 		DefaultPasswordCount,
 		fmt.Sprintf("How many passwords to generate? (max limit %d)", MaxPasswordCount),
 	)
-	Cmd.Flags().BoolVar(
+	PasswordCmd.Flags().BoolVar(
 		&includeSpecialChars,
 		FlagNameIncludeSpecialCharacters,
 		DefaultIncludeSpecialChars,
 		"Whether to include special characters [for example: $ # @ ^]",
 	)
-	Cmd.Flags().UintVar(
+
+	PasswordCmd.Flags().BoolVar(
+		&mustBeUrlSafe,
+		FlagNameMustBeUrlSafe,
+		DefaultMustBeUrlSafe,
+		"Whether to generate URL safe passwords",
+	)
+	PasswordCmd.Flags().UintVar(
 		&destination,
 		FlagNameOutput,
 		DefaultOutput,
 		fmt.Sprintf("Device for dumping the password. %d for console, %d for file (filepath must be specified with %s)", ToStdOut, ToFile, FlagNameFilePath),
 	)
-	Cmd.Flags().StringVar(
+	PasswordCmd.Flags().StringVar(
 		&destinationFilePath,
 		FlagNameFilePath,
 		DefaultFilePath,
@@ -109,33 +101,70 @@ func runPasswordGenerator(cmd *cobra.Command, args []string) error {
 	logger.Println("givenPasswordLength", passwordLength)
 	logger.Println("passwordCount", passwordCount)
 	logger.Println("shouldIncludeSpecialChars", includeSpecialChars)
-	myPg := PasswordOptions{
-		length:              passwordLength,
-		includeSpecialChars: includeSpecialChars,
-		count:               passwordCount,
+	err := validateOptions()
+	if err != nil {
+		return err
 	}
+	var humanReadableDestName string
+
+	switch destination {
+	case ToStdOut:
+		outputDevice = os.Stdout
+		humanReadableDestName = "console"
+	case ToFile:
+		passwordFile, err := createFile()
+		if err != nil {
+			return errors.New("Error opening file " + destinationFilePath)
+		}
+		humanReadableDestName = fmt.Sprintf("File %s", destinationFilePath)
+		outputDevice = passwordFile
+		defer passwordFile.Close()
+	}
+	logger.Println("destination", humanReadableDestName)
+	return write(generate())
+}
+func createFile() (*os.File, error) {
+	return os.OpenFile(destinationFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+}
+func validateOptions() error {
 	if passwordLength > MaxPasswordLength {
 		return fmt.Errorf("the max length should not exceed %d", MaxPasswordLength)
 	}
 	if passwordCount > MaxPasswordCount {
 		return fmt.Errorf("the max count should not exceed %d", MaxPasswordCount)
 	}
-	var humanReadableDestName string
+	return nil
+}
 
-	switch destination {
-	case ToStdOut:
-		myPg.destination = os.Stdout
-		humanReadableDestName = "console"
-	case ToFile:
-		passwordFile, err := os.OpenFile(destinationFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			return errors.New("Error opening file " + destinationFilePath)
-		}
-		humanReadableDestName = fmt.Sprintf("File %s", destinationFilePath)
-		myPg.destination = passwordFile
-		defer passwordFile.Close()
+func generate() [][]byte {
+	passwds := make([][]byte, passwordCount)
+	for i := 0; i < int(passwordCount); i = i + 1 {
+		passwds[i] = util.GenerateKey(int(passwordLength), includeSpecialChars)
 	}
-	logger.Println("destination", humanReadableDestName)
-	myPg.Generate()
+	return passwds
+}
+
+func write(data [][]byte) error {
+	var err error
+	var stringPassword string
+	addNewLine := false
+	if passwordCount > 1 {
+		addNewLine = true
+	}
+	for _, bytePassword := range data {
+		if mustBeUrlSafe {
+			stringPassword = util.Base64URLEncode(bytePassword)
+		} else {
+			stringPassword = *(*string)(unsafe.Pointer(&bytePassword))
+		}
+		if addNewLine {
+			_, err = outputDevice.Write([]byte(stringPassword + "\n"))
+		} else {
+			_, err = outputDevice.Write([]byte(stringPassword))
+		}
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

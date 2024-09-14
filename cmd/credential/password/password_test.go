@@ -7,15 +7,15 @@ import (
 	"testing"
 )
 
-func TestMaxLength(t *testing.T) {
+func TestRunPasswordGenerator(t *testing.T) {
 
 	t.Run("Should error if password exceeds max length", func(t *testing.T) {
-		Cmd.SetOutput(os.Stdout)
-		Cmd.SetArgs([]string{
+		PasswordCmd.SetOutput(os.Stdout)
+		PasswordCmd.SetArgs([]string{
 			"--length=102",
 		})
-		Cmd.DebugFlags()
-		_, err := Cmd.ExecuteC()
+		PasswordCmd.DebugFlags()
+		_, err := PasswordCmd.ExecuteC()
 		fmt.Println(err)
 		if err == nil {
 			t.Errorf("Should not allow length greater than %d", MaxPasswordLength)
@@ -25,16 +25,16 @@ func TestMaxLength(t *testing.T) {
 	t.Run("Should respect the length flag", func(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
-		Cmd.SetOutput(os.Stdout)
+		PasswordCmd.SetOutput(os.Stdout)
 		passwdLength := 20
-		Cmd.SetArgs([]string{
+		PasswordCmd.SetArgs([]string{
 			"password",
 			fmt.Sprintf("--length=%d", passwdLength),
 			"--output=1",
 			fmt.Sprintf("--file=%s", passwdFilePath),
 		})
-		Cmd.DebugFlags()
-		_, err := Cmd.ExecuteC()
+		PasswordCmd.DebugFlags()
+		_, err := PasswordCmd.ExecuteC()
 		if err != nil {
 			t.Errorf("Unexpected error %s", err)
 		}
@@ -51,18 +51,18 @@ func TestMaxLength(t *testing.T) {
 	t.Run("Should respect the count flag", func(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
-		Cmd.SetOutput(os.Stdout)
+		PasswordCmd.SetOutput(os.Stdout)
 		passwdLength := 20
 		requiredCount := 20
-		Cmd.SetArgs([]string{
+		PasswordCmd.SetArgs([]string{
 			"password",
 			"--output=1",
 			fmt.Sprintf("--length=%d", passwdLength),
 			fmt.Sprintf("--count=%d", requiredCount),
 			fmt.Sprintf("--file=%s", passwdFilePath),
 		})
-		Cmd.DebugFlags()
-		_, err := Cmd.ExecuteC()
+		PasswordCmd.DebugFlags()
+		_, err := PasswordCmd.ExecuteC()
 		if err != nil {
 			t.Errorf("Unexpected error %s", err)
 		}
@@ -92,16 +92,16 @@ func TestMaxLength(t *testing.T) {
 	t.Run("Should not allow more than maxcount passwords", func(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
-		Cmd.SetOutput(os.Stdout)
+		PasswordCmd.SetOutput(os.Stdout)
 		requiredCount := MaxPasswordCount + 1
-		Cmd.SetArgs([]string{
+		PasswordCmd.SetArgs([]string{
 			"password",
 			"--output=1",
 			fmt.Sprintf("--count=%d", requiredCount),
 			fmt.Sprintf("--file=%s", passwdFilePath),
 		})
-		Cmd.DebugFlags()
-		_, err := Cmd.ExecuteC()
+		PasswordCmd.DebugFlags()
+		_, err := PasswordCmd.ExecuteC()
 		if err == nil {
 			t.Errorf("Should have generated %d passwords", requiredCount)
 		}

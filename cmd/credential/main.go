@@ -20,7 +20,7 @@ func main() {
 	}
 	rootCmd.SetOutput(os.Stdout)
 
-	rootCmd.AddCommand(password.Cmd)
+	rootCmd.AddCommand(password.PasswordCmd)
 
 	// Execute the Cobra command tree, parsing args and identifying the command
 	if err := rootCmd.Execute(); err != nil {
