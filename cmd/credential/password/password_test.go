@@ -48,6 +48,33 @@ func TestRunPasswordGenerator(t *testing.T) {
 		}
 	})
 
+	t.Run("Should respect the url safe flag", func(t *testing.T) {
+		testDir := t.TempDir()
+		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
+		PasswordCmd.SetOutput(os.Stdout)
+		passwdLength := 20
+		PasswordCmd.SetArgs([]string{
+			"password",
+			fmt.Sprintf("--length=%d", passwdLength),
+			fmt.Sprintf("--length=%d", passwdLength),
+			"--output=1",
+			fmt.Sprintf("--file=%s", passwdFilePath),
+		})
+		PasswordCmd.DebugFlags()
+		_, err := PasswordCmd.ExecuteC()
+		if err != nil {
+			t.Errorf("Unexpected error %s", err)
+		}
+		buff, err := os.ReadFile(passwdFilePath)
+		if err != nil {
+			t.Error(err)
+		}
+		passwd := string(buff)
+		if len(passwd) != passwdLength {
+			t.Errorf("The %s is not of length %d", passwd, passwdLength)
+		}
+	})
+
 	t.Run("Should respect the count flag", func(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)

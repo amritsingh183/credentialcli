@@ -74,7 +74,6 @@ func init() {
 		DefaultIncludeSpecialChars,
 		"Whether to include special characters [for example: $ # @ ^]",
 	)
-
 	PasswordCmd.Flags().BoolVar(
 		&mustBeUrlSafe,
 		FlagNameMustBeUrlSafe,
@@ -155,7 +154,9 @@ func write(data [][]byte) error {
 		if mustBeUrlSafe {
 			stringPassword = util.Base64URLEncode(bytePassword)
 		} else {
-			stringPassword = *(*string)(unsafe.Pointer(&bytePassword))
+			usPtr := unsafe.Pointer(&bytePassword)
+			strPtr := (*string)(usPtr)
+			stringPassword = *strPtr
 		}
 		if addNewLine {
 			_, err = outputDevice.Write([]byte(stringPassword + "\n"))

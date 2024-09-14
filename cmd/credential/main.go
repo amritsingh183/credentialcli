@@ -7,9 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	version = "0.0.1"
-)
+var version = "0.0.1"
 
 func main() {
 	// Build the root command that runs the credential generator

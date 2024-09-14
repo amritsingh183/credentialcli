@@ -2,17 +2,30 @@
 
 This CLI utility exposes the following commands which can be used to generate credentials like password(s)
 
-## How to install
+## How to install or create binaries
 
-Simply run
+To install, simply run
 
 ```shell
-go install ./cmd/credential
+make install
 ```
-
 this will create a binary file named `credential` in your $GOPATH.
 You may add $GOPATH to your $PATH to run the `credential` utility
 
+To build binaries for distribution, simply run
+
+```shell
+make binary
+```
+This will create binaries from Darwin-linux, Linux-amd64, Linux-arm64 in `./out/bin`
+
+## How to run tests
+
+To run the tests from the code, simply run
+
+```shell
+make test
+```
 ## How to run this utility
 
 To generate a password run the following command
@@ -21,6 +34,11 @@ To generate a password run the following command
 ~/go/bin/credential password
 ```
 
+or if you have the `credential` in your $PATH
+
+```shell
+credential password
+```
 ### Available options for generating passwords
 
 - Length of the password(s) can be specified using `length=8` forexample
