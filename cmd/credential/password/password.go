@@ -1,7 +1,6 @@
 package password
 
 import (
-	"amritsingh183/credentialcli/util"
 	"errors"
 	"fmt"
 	"io"
@@ -9,11 +8,15 @@ import (
 	"os"
 	"unsafe"
 
+	"amritsingh183/credentialcli/util"
+
 	"github.com/spf13/cobra"
 )
 
 var (
 	// Cmd uses a parent cobra.Command to invoke the run function when subcommand `password` is issued
+	// FIXME: rename this command to "rootCmd" or "passwordCmd"
+	// "Cmd" is a little bit unhappy.
 	Cmd = &cobra.Command{
 		Use:     fmt.Sprintf("password [-h] [-v] [%s] [%s] [%s] [%s] [%s]", FlagNameLength, FlagNameIncludeSpecialCharacters, FlagNameOutput, FlagNamePasswordCount, FlagNameFilePath),
 		Aliases: []string{"pass"},
@@ -49,11 +52,14 @@ const (
 	FlagNamePasswordCount            = "count"
 )
 
+// [Q]: don't get why did you use this interface.
+// You didn't implement this interface in your code.
 type PasswordGenerator interface {
 	Write(io.Writer) error
 	Generate(int) string
 }
 
+// [Q]: don't get why did you use this struct.
 type PasswordOptions struct {
 	length              uint
 	count               uint
@@ -61,9 +67,12 @@ type PasswordOptions struct {
 	destination         io.Writer
 }
 
+// FIXME: this doesn't implement the interface "PasswordGenerator"
 func (pg *PasswordOptions) Generate() {
+	// FIXME: "i = i + 1" => i++
 	for i := 0; i < int(pg.count); i = i + 1 {
 		bytePassword := util.GenerateKey(int(pg.length), pg.includeSpecialChars)
+		// FIXME: hard to read here.
 		stringPassword := *(*string)(unsafe.Pointer(&bytePassword))
 		pg.destination.Write([]byte(stringPassword + "\n"))
 	}
@@ -103,6 +112,9 @@ func init() {
 	)
 }
 
+// FIXME: this function does too many things.
+// break it down into smaller functions.
+// Try to use the "internal" pkg and leave exposed only the minimum things.
 func runPasswordGenerator(cmd *cobra.Command, args []string) error {
 	log.Println("running the PasswordGenerator")
 	logger := log.New(cmd.OutOrStdout(), "creds: ", log.Ldate|log.Ltime|log.LUTC)
@@ -127,7 +139,7 @@ func runPasswordGenerator(cmd *cobra.Command, args []string) error {
 		myPg.destination = os.Stdout
 		humanReadableDestName = "console"
 	case ToFile:
-		passwordFile, err := os.OpenFile(destinationFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		passwordFile, err := os.OpenFile(destinationFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 		if err != nil {
 			return errors.New("Error opening file " + destinationFilePath)
 		}

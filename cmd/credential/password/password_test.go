@@ -7,8 +7,10 @@ import (
 	"testing"
 )
 
+// FIXME: there is no MaxLength() function in the source code.
+// Keep 1:1 relationship between the test code function and the source code ones.
+// Use something like "testify/suite" to tidy things up.
 func TestMaxLength(t *testing.T) {
-
 	t.Run("Should error if password exceeds max length", func(t *testing.T) {
 		Cmd.SetOutput(os.Stdout)
 		Cmd.SetArgs([]string{
@@ -44,6 +46,7 @@ func TestMaxLength(t *testing.T) {
 		}
 		passwd := string(buff)
 		if len(passwd) != passwdLength {
+			// FIXME: this test fails
 			t.Errorf("The %s is not of length %d", passwd, passwdLength)
 		}
 	})
@@ -106,5 +109,4 @@ func TestMaxLength(t *testing.T) {
 			t.Errorf("Should have generated %d passwords", requiredCount)
 		}
 	})
-
 }

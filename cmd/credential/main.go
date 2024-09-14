@@ -1,15 +1,23 @@
 package main
 
 import (
-	"amritsingh183/credentialcli/cmd/credential/password"
 	"os"
+
+	"amritsingh183/credentialcli/cmd/credential/password"
 
 	"github.com/spf13/cobra"
 )
 
-var (
-	version = "0.0.1"
-)
+var version = "0.0.1"
+
+// FIXME: the project structure might be good.
+/*
+	I would have used the cobra-cli command to initialize it.
+	Start by creating a go.mod with the command 'go mod init'.
+	Then, issue the 'cobra-cli init'.
+	I cannot see the root.go file.
+	Then, keep adding commands & subcommands with the 'cobra-cli add <name of command>
+*/
 
 func main() {
 	// Build the root command that runs the credential generator

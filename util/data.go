@@ -8,9 +8,10 @@ import (
 	mathRand "math/rand"
 )
 
-var (
-	srcForMathRand mathRand.Source
-)
+var srcForMathRand mathRand.Source
+
+// FIXME: too many comments here.
+// Put a section in the README.md file if you need this.
 
 const (
 	letterBytesAlnum    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
@@ -48,7 +49,6 @@ func GenerateKey(n int, includeSpecials bool) []byte {
 	letterBytes := letterBytesAlnum
 	if includeSpecials {
 		letterBytes = letterBytesSpecials
-
 	}
 	randBytes := make([]byte, 10240)
 	io.ReadFull(cryptoRand.Reader, randBytes) // the error part is already handled in assertAvailablePRNG

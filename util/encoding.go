@@ -2,6 +2,8 @@ package util
 
 import "encoding/base64"
 
+// FIXME: these functions have never been used.
+
 // Base64URLEncode Base64URLEncode
 // more efficient than hex encoding
 func Base64URLEncode(b []byte) string {
