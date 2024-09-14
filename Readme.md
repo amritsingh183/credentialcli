@@ -46,8 +46,10 @@ credential password
 - To dump the password(s) to file set `output=1` and set filepath using `file=/your/filepath`
 - To control the number of passwords use `count=20` for example
 - If you want to include special characters in your passwords(recommended) use the `includeSpecialCharacters true` flag
+- For some reason if you need to generate URL-safe/Base64Encoded passwords (Never ever send passwords in URLs)
+use `urlSafe=true`
 
-some examples to run the utility( Assuming you have put `credential` in your $PATH)
+Some examples to run the utility( Assuming you have put `credential` in your $PATH)
 
 - To generate a password with default options
     ```shell
