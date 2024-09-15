@@ -1,4 +1,7 @@
-package password
+/*
+Copyright © 2024 Amrit Singh <amritsingh183@gmail.com>
+*/
+package cmd
 
 import (
 	"amritsingh183/credentialcli/util"
@@ -10,24 +13,6 @@ import (
 	"unsafe"
 
 	"github.com/spf13/cobra"
-)
-
-var (
-	// PasswordCmd uses a parent cobra.Command to invoke the run function when
-	// subcommand `password` is issued
-	PasswordCmd = &cobra.Command{
-		Use:     fmt.Sprintf("password [-h] [-v] [%s] [%s] [%s] [%s] [%s]", FlagNameLength, FlagNameIncludeSpecialCharacters, FlagNameOutput, FlagNamePasswordCount, FlagNameFilePath),
-		Aliases: []string{"pass"},
-		Short:   "generate secure passwords",
-		RunE:    runPasswordGenerator,
-	}
-	passwordLength      uint
-	passwordCount       uint
-	mustBeUrlSafe       bool
-	includeSpecialChars bool
-	destination         uint
-	outputDevice        io.Writer
-	destinationFilePath string
 )
 
 const (
@@ -54,39 +39,57 @@ const (
 	FlagNamePasswordCount            = "count"
 )
 
+// passwordCmd represents the password command
+var (
+	passwordCmd = &cobra.Command{
+		Use:     fmt.Sprintf("password [-h] [-v] [%s] [%s] [%s] [%s] [%s]", FlagNameLength, FlagNameIncludeSpecialCharacters, FlagNameOutput, FlagNamePasswordCount, FlagNameFilePath),
+		Aliases: []string{"pass"},
+		Short:   "generate secure passwords",
+		RunE:    runPasswordGenerator,
+	}
+	passwordLength      uint
+	passwordCount       uint
+	mustBeUrlSafe       bool
+	includeSpecialChars bool
+	destination         uint
+	outputDevice        io.Writer
+	destinationFilePath string
+)
+
 func init() {
+
 	// Local flags that are only available to this command.
-	PasswordCmd.Flags().UintVar(
+	passwordCmd.Flags().UintVar(
 		&passwordLength,
 		FlagNameLength,
 		DefaultPasswordLength,
 		fmt.Sprintf("How long the passwords should be? (max limit %d)", MaxPasswordLength),
 	)
-	PasswordCmd.Flags().UintVar(
+	passwordCmd.Flags().UintVar(
 		&passwordCount,
 		FlagNamePasswordCount,
 		DefaultPasswordCount,
 		fmt.Sprintf("How many passwords to generate? (max limit %d)", MaxPasswordCount),
 	)
-	PasswordCmd.Flags().BoolVar(
+	passwordCmd.Flags().BoolVar(
 		&includeSpecialChars,
 		FlagNameIncludeSpecialCharacters,
 		DefaultIncludeSpecialChars,
 		"Whether to include special characters [for example: $ # @ ^]",
 	)
-	PasswordCmd.Flags().BoolVar(
+	passwordCmd.Flags().BoolVar(
 		&mustBeUrlSafe,
 		FlagNameMustBeUrlSafe,
 		DefaultMustBeUrlSafe,
 		"Whether to generate URL safe passwords",
 	)
-	PasswordCmd.Flags().UintVar(
+	passwordCmd.Flags().UintVar(
 		&destination,
 		FlagNameOutput,
 		DefaultOutput,
 		fmt.Sprintf("Device for dumping the password. %d for console, %d for file (filepath must be specified with %s)", ToStdOut, ToFile, FlagNameFilePath),
 	)
-	PasswordCmd.Flags().StringVar(
+	passwordCmd.Flags().StringVar(
 		&destinationFilePath,
 		FlagNameFilePath,
 		DefaultFilePath,

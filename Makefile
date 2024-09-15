@@ -11,10 +11,10 @@ LDFLAGS := -ldflags "-w -s -X main.version=${VERSION} -extldflags '-static'"
 BINARY := credential-${VERSION}
 
 test:
-	@go test -race ./cmd/credential/password
+	@go test -race ./cmd
 
 install:
-	@go install ${BUILD_FLAGS} ${LDFLAGS} ./cmd/credential
+	@go install ${BUILD_FLAGS} ${LDFLAGS}
 
 binary: out/bin/${BINARY}.gz
 
@@ -23,12 +23,12 @@ out/bin/${BINARY}.gz: out/bin/${BINARY}-amd64 out/bin/${BINARY}-arm64 out/bin/${
 
 out/bin/${BINARY}-amd64:
 	@mkdir -p ./out/bin
-	@GOOS=linux GOARCH=amd64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-amd64 ./cmd/credential
+	@GOOS=linux GOARCH=amd64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-amd64
 
 out/bin/${BINARY}-arm64:
 	@mkdir -p ./out/bin
-	@GOOS=linux GOARCH=arm64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-arm64 ./cmd/credential
+	@GOOS=linux GOARCH=arm64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-arm64
 
 out/bin/${BINARY}-darwin:
 	@mkdir -p ./out/bin
-	@GOOS=darwin GOARCH=amd64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-darwin ./cmd/credential
+	@GOOS=darwin GOARCH=amd64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-darwin

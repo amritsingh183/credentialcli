@@ -1,6 +1,7 @@
 # About the Credential utility
 
-This CLI utility exposes the following commands which can be used to generate credentials like password(s)
+This CLI utility exposes the following commands which can be used to generate credentials like password(s).
+It was build with love using https://github.com/spf13/cobra-cli
 
 ## How to install or create binaries
 
