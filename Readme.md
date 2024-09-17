@@ -1,5 +1,9 @@
 # About the Credential utility
 
+<!-- TODO: add a section on how to run tests. -->
+<!-- You can have three h2 titles: Install, Run, and Test. Then, you can narrow them down
+by explaining in a more specific way. -->
+
 This CLI utility exposes the following commands which can be used to generate credentials like password(s).
 It was build with love using https://github.com/spf13/cobra-cli
 
@@ -48,6 +52,8 @@ credential password
 ```
 ### Available options for generating passwords
 
+<!-- TODO: expand this section and put some run examples. -->
+
 - Length of the password(s) can be specified using `length=8` forexample
 - To dump the password(s) to console set `output=0`
 - To dump the password(s) to file set `output=1` and set filepath using `file=/your/filepath`
@@ -92,4 +98,3 @@ Some examples to run the utility( Assuming you have put `credential` in your $PA
 ## How to run/test it without installing
 
 Simply replace `~/go/bin/credential` with `go run cmd/credential/main.go` and you can try everything described above
-

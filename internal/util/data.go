@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"io"
 	mathRand "math/rand"
+	"os"
 )
 
-var (
-	srcForMathRand mathRand.Source
-)
+var srcForMathRand mathRand.Source
+
+// FIXME: too many comments here.
+// Put a section in the README.md file if you need this.
 
 const (
 	letterBytesAlnum    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
@@ -37,14 +39,13 @@ func assertAvailablePRNG(n uint) {
 	}
 }
 
-// GenerateShortID generates a password or a cryptographic key, etc
+// GenerateShortID generates a password or a cryptographic key
 func GenerateKey(n int, includeSpecials bool) []byte {
 	letterBytes := letterBytesAlnum
 	if includeSpecials {
 		letterBytes = letterBytesSpecials
 	}
 	randBytes := make([]byte, 10240)
-	// the error part is already handled in assertAvailablePRNG
 	io.ReadFull(cryptoRand.Reader, randBytes)
 	randSeed := int64(binary.LittleEndian.Uint64(randBytes[:]))
 	srcForMathRand = mathRand.NewSource(randSeed)
@@ -65,4 +66,8 @@ func GenerateKey(n int, includeSpecials bool) []byte {
 		remain--
 	}
 	return b
+}
+
+func CreateFile(destinationFilePath string) (*os.File, error) {
+	return os.OpenFile(destinationFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 }

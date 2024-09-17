@@ -1,14 +1,17 @@
 package cmd
 
 import (
+	"amritsingh183/credentialcli/internal/password"
 	"bufio"
 	"fmt"
 	"os"
 	"testing"
 )
 
+// FIXME: there is no MaxLength() function in the source code.
+// Keep 1:1 relationship between the test code function and the source code ones.
+// Use something like "testify/suite" to tidy things up.
 func TestRunPasswordGenerator(t *testing.T) {
-
 	t.Run("Should error if password exceeds max length", func(t *testing.T) {
 		passwordCmd.SetOutput(os.Stdout)
 		passwordCmd.SetArgs([]string{
@@ -18,7 +21,7 @@ func TestRunPasswordGenerator(t *testing.T) {
 		_, err := passwordCmd.ExecuteC()
 		fmt.Println(err)
 		if err == nil {
-			t.Errorf("Should not allow length greater than %d", MaxPasswordLength)
+			t.Errorf("Should not allow length greater than %d", password.MaxPasswordLength)
 		}
 	})
 
@@ -29,33 +32,6 @@ func TestRunPasswordGenerator(t *testing.T) {
 		passwdLength := 20
 		passwordCmd.SetArgs([]string{
 			"password",
-			fmt.Sprintf("--length=%d", passwdLength),
-			"--output=1",
-			fmt.Sprintf("--file=%s", passwdFilePath),
-		})
-		passwordCmd.DebugFlags()
-		_, err := passwordCmd.ExecuteC()
-		if err != nil {
-			t.Errorf("Unexpected error %s", err)
-		}
-		buff, err := os.ReadFile(passwdFilePath)
-		if err != nil {
-			t.Error(err)
-		}
-		passwd := string(buff)
-		if len(passwd) != passwdLength {
-			t.Errorf("The %s is not of length %d", passwd, passwdLength)
-		}
-	})
-
-	t.Run("Should respect the url safe flag", func(t *testing.T) {
-		testDir := t.TempDir()
-		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
-		passwordCmd.SetOutput(os.Stdout)
-		passwdLength := 20
-		passwordCmd.SetArgs([]string{
-			"password",
-			fmt.Sprintf("--length=%d", passwdLength),
 			fmt.Sprintf("--length=%d", passwdLength),
 			"--output=1",
 			fmt.Sprintf("--file=%s", passwdFilePath),
@@ -120,7 +96,7 @@ func TestRunPasswordGenerator(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
 		passwordCmd.SetOutput(os.Stdout)
-		requiredCount := MaxPasswordCount + 1
+		requiredCount := password.MaxPasswordCount + 1
 		passwordCmd.SetArgs([]string{
 			"password",
 			"--output=1",
@@ -133,5 +109,4 @@ func TestRunPasswordGenerator(t *testing.T) {
 			t.Errorf("Should have generated %d passwords", requiredCount)
 		}
 	})
-
 }
