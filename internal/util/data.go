@@ -13,7 +13,7 @@ var srcForMathRand mathRand.Source
 
 // FIXME: too many comments here.
 // Put a section in the README.md file if you need this.
-
+// [x] removed all comments
 const (
 	letterBytesAlnum    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 	letterBytesSpecials = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+=-/?.,><';:[]{}|`~`"

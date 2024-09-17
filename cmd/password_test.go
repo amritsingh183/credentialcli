@@ -11,6 +11,7 @@ import (
 // FIXME: there is no MaxLength() function in the source code.
 // Keep 1:1 relationship between the test code function and the source code ones.
 // Use something like "testify/suite" to tidy things up.
+// [x] Renamed it to better represent the relationship
 func TestRunPasswordGenerator(t *testing.T) {
 	t.Run("Should error if password exceeds max length", func(t *testing.T) {
 		passwordCmd.SetOutput(os.Stdout)

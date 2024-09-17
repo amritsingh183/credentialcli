@@ -3,7 +3,7 @@
 <!-- TODO: add a section on how to run tests. -->
 <!-- You can have three h2 titles: Install, Run, and Test. Then, you can narrow them down
 by explaining in a more specific way. -->
-
+<!-- [x] added more sections and improved existing ones-->
 This CLI utility exposes the following commands which can be used to generate credentials like password(s).
 It was build with love using https://github.com/spf13/cobra-cli
 
@@ -53,6 +53,7 @@ credential password
 ### Available options for generating passwords
 
 <!-- TODO: expand this section and put some run examples. -->
+<!-- Done adding examples -->
 
 - Length of the password(s) can be specified using `length=8` forexample
 - To dump the password(s) to console set `output=0`
