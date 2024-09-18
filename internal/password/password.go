@@ -1,13 +1,14 @@
 package password
 
 import (
-	"amritsingh183/credentialcli/internal/util"
 	"errors"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"unsafe"
+
+	"amritsingh183/credentialcli/internal/util"
 )
 
 var logger *log.Logger
@@ -36,6 +37,8 @@ func init() {
 	logger = log.New(os.Stderr, "password generator: ", logOpts)
 }
 
+// FIXME: let's get rid of this struct. Let's group the parameters of the password generator in another struct with a different name. For the target, you can leverage the interface io.Writer that can be accepted as a parameter of the function that has to write the password somewhere.
+// FIXME: I saw to many methods around and this does not make too much sense in this kind of application (where we're not relying on external dependencies).
 type Generator struct {
 	Length              uint
 	Count               uint
@@ -85,6 +88,7 @@ func (g *Generator) Write(data [][]byte) error {
 	}
 	return nil
 }
+
 func (g *Generator) Validate() error {
 	if g.Length > MaxPasswordLength {
 		return fmt.Errorf("the max length should not exceed %d", MaxPasswordLength)
@@ -96,6 +100,8 @@ func (g *Generator) Validate() error {
 	case ToStdOut:
 		g.destination = os.Stdout
 	case ToFile:
+		// BUG: you called the method "Validate" but you're writing a file.
+		// this can be done at the end when you're about to write the file.
 		passwordFile, err := util.CreateFile(g.Filepath)
 		if err != nil {
 			return errors.New("Error opening file " + g.Filepath)
