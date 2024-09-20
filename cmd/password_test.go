@@ -1,17 +1,19 @@
 package cmd
 
 import (
-	"amritsingh183/credentialcli/internal/password"
 	"bufio"
 	"fmt"
 	"os"
 	"testing"
+
+	"amritsingh183/credentialcli/internal/password"
 )
 
 // FIXME: there is no MaxLength() function in the source code.
 // Keep 1:1 relationship between the test code function and the source code ones.
 // Use something like "testify/suite" to tidy things up.
-// [x] Renamed it to better represent the relationship
+// [x] Renamed it to better represent the relationship => Wrong
+// FIXME: you're testing the Cobra CLI commands here. IMHO, you should have also tested the method Generator.Generate which is harder to test since it's a method and not a function
 func TestRunPasswordGenerator(t *testing.T) {
 	t.Run("Should error if password exceeds max length", func(t *testing.T) {
 		passwordCmd.SetOutput(os.Stdout)
@@ -26,6 +28,8 @@ func TestRunPasswordGenerator(t *testing.T) {
 		}
 	})
 
+	// FIXME: fix this test. If you stick to interface you can write the password to an in-memory structure and then check it for data.
+	// The same applies for the next test functions.
 	t.Run("Should respect the length flag", func(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)

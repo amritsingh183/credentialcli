@@ -11,15 +11,6 @@ import (
 
 var version = "0.0.1"
 
-// FIXME: the project structure might be good.
-// [x] used cobra-cli now to follow what the community has decided
-/*
-	I would have used the cobra-cli command to initialize it.
-	Start by creating a go.mod with the command 'go mod init'.
-	Then, issue the 'cobra-cli init'.
-	I cannot see the root.go file.
-	Then, keep adding commands & subcommands with the 'cobra-cli add <name of command>
-*/
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:     "credential",
