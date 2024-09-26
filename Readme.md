@@ -100,7 +100,7 @@ Some examples to run the utility( Assuming you have put `credential` in your $PA
 Simply replace `~/go/bin/credential` with `go run main.go` and you can try everything described above.
 
 ## New Requirements
-
+<!-- [x] Not started yet -->
 The next you're asked is to create a hierarchy of commands in this way:
 
 - `password` is the master command
