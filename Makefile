@@ -4,14 +4,15 @@
 # Allow environment variable override for running targets within Dockerfile
 VERSION ?= $(shell git describe --always --dirty --tags | egrep -o '([0-9]+\.){1,2}[0-9]?[a-zA-Z0-9-]+')
 BUILD := $(shell date +%FT%T%z)
-LASTTAG := $(shell git describe --abbrev=0 --tags)
+# [x] fetching git tag here
+LASTTAG := $(shell git fetch --tags && git describe --abbrev=0 --tags)
 BUILD_FLAGS :=
 
 LDFLAGS := -ldflags "-w -s -X main.version=${VERSION} -extldflags '-static'"
 BINARY := credential-${VERSION}
 
 test:
-	@go test -race ./cmd
+	@go test -race ./...
 
 install:
 	@go install ${BUILD_FLAGS} ${LDFLAGS}

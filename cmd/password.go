@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"amritsingh183/credentialcli/internal/password"
 
@@ -19,8 +20,9 @@ var (
 	passwordLength      uint
 	passwordCount       uint
 	includeSpecialChars bool
-	destination         uint
+	destinationType     uint
 	destinationFilePath string
+	logger              *log.Logger
 )
 
 const (
@@ -52,7 +54,7 @@ func init() {
 		"Whether to include special characters [for example: $ # @ ^]",
 	)
 	passwordCmd.Flags().UintVar(
-		&destination,
+		&destinationType,
 		FlagNameOutput,
 		password.DefaultOutput,
 		fmt.Sprintf("Device for dumping the password. %d for console, %d for file (filepath must be specified with %s)", password.ToStdOut, password.ToFile, FlagNameFilePath),
@@ -63,31 +65,30 @@ func init() {
 		password.DefaultFilePath,
 		fmt.Sprintf("filepath (when %d is provided for %s)", password.ToFile, FlagNameOutput),
 	)
-}
-
-type Generator interface {
-	Generate() [][]byte
-	Write([][]byte) error
-	Validate() error
+	logOpts := log.LstdFlags | log.Lshortfile | log.Ldate | log.Ltime | log.LUTC
+	logger = log.New(os.Stderr, "password generator: ", logOpts)
 }
 
 func runPasswordGenerator(cmd *cobra.Command, args []string) error {
 	log.Println("running the PasswordGenerator")
-	passGen := password.Generator{
+	passOptions := password.Options{
 		Length:              passwordLength,
 		Count:               passwordCount,
 		IncludeSpecialChars: includeSpecialChars,
-		DestinationType:     destination,
+		DestinationType:     destinationType,
 		Filepath:            destinationFilePath,
 	}
-	return GeneratePassword(&passGen)
-}
-
-func GeneratePassword(passGen Generator) error {
-	err := passGen.Validate()
+	if passwordCount > 1 {
+		// if there are more than 1 passwords
+		// each will be separated by the Delimiter
+		passOptions.Delimiter = []byte{'\n'}
+	}
+	err := passOptions.Validate()
 	if err != nil {
 		return err
 	}
-	passwords := passGen.Generate()
-	return passGen.Write(passwords)
+	logMesg := `generating password(s) with the following options %#v`
+	logger.Printf(logMesg, passOptions)
+	passwords := password.Generate(&passOptions)
+	return password.Write(passwords, &passOptions)
 }

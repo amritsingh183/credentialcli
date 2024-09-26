@@ -1,113 +1,62 @@
 package password
 
 import (
+	"amritsingh183/credentialcli/internal/util"
 	"errors"
-	"fmt"
 	"io"
-	"log"
 	"os"
 	"unsafe"
-
-	"amritsingh183/credentialcli/internal/util"
 )
 
-var logger *log.Logger
+// // FIXME: let's get rid of this struct. Let's group the parameters of the password generator in another struct with a different name. For the target, you can leverage the interface io.Writer that can be accepted as a parameter of the function that has to write the password somewhere.
+// // FIXME: I saw to many methods around and this does not make too much sense in this kind of application (where we're not relying on external dependencies).
+// [x] removing the Generator struct and defining
+// a new Options struct in internal/password/options.go
 
-// Output Devices
-const (
-	ToStdOut = iota
-	ToFile
-)
+// type Generator struct {
+// 	destination  io.Writer
+// 	passwordFile *os.File
+// }
 
-// Password Generation Rules
-const (
-	DefaultPasswordLength      = 7
-	DefaultPasswordCount       = 1
-	DefaultIncludeSpecialChars = true
-	DefaultMustBeUrlSafe       = false
-	DefaultOutput              = ToStdOut
-	DefaultFilePath            = "./passwords.txt"
-
-	MaxPasswordLength = 100
-	MaxPasswordCount  = 100
-)
-
-func init() {
-	logOpts := log.LstdFlags | log.Lshortfile | log.Ldate | log.Ltime | log.LUTC
-	logger = log.New(os.Stderr, "password generator: ", logOpts)
-}
-
-// FIXME: let's get rid of this struct. Let's group the parameters of the password generator in another struct with a different name. For the target, you can leverage the interface io.Writer that can be accepted as a parameter of the function that has to write the password somewhere.
-// FIXME: I saw to many methods around and this does not make too much sense in this kind of application (where we're not relying on external dependencies).
-type Generator struct {
-	Length              uint
-	Count               uint
-	IncludeSpecialChars bool
-	DestinationType     uint
-	destination         io.Writer
-
-	Filepath     string
-	passwordFile *os.File
-}
-
-func (g *Generator) Generate() [][]byte {
-	logMesg := `generating password(s) with the following options
-count=%v
-length=%v
-destination=%v
-filePath=%v
-includeSpecialChars=%v`
-	logger.Printf(logMesg, g.Count, g.Length, g.DestinationType, g.Filepath, g.IncludeSpecialChars)
-	passwds := make([][]byte, g.Count)
-	for i := 0; i < int(g.Count); i = i + 1 {
-		passwds[i] = util.GenerateKey(int(g.Length), g.IncludeSpecialChars)
+// Generate generate password(s) according to the
+// given options.
+// For now, since all the code is for internal use
+// we do not need to make sure that
+// Options.Validate() was called
+func Generate(o *Options) [][]byte {
+	passwds := make([][]byte, o.Count)
+	for i := 0; i < int(o.Count); i = i + 1 {
+		passwds[i] = util.GenerateKey(int(o.Length), o.IncludeSpecialChars)
+		if len(o.Delimiter) > 0 {
+			passwds[i] = append(passwds[i], o.Delimiter...)
+		}
 	}
 	return passwds
 }
 
-func (g *Generator) Write(data [][]byte) error {
-	defer g.passwordFile.Close()
+// Write writes the password to destination.
+// It closes the file when destination is a file
+func Write(data [][]byte, o *Options) error {
+	var w io.Writer
 	var err error
-	var stringPassword string
-	addNewLine := false
-	if g.Count > 1 {
-		addNewLine = true
+	switch o.DestinationType {
+	case ToFile:
+		w, err = os.OpenFile(o.Filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+		if err != nil {
+			return errors.New("Error opening file " + o.Filepath)
+		}
+	case ToStdOut:
+		w = os.Stdout
 	}
+	var stringPassword string
 	for _, bytePassword := range data {
 		usPtr := unsafe.Pointer(&bytePassword)
 		strPtr := (*string)(usPtr)
 		stringPassword = *strPtr
-		if addNewLine {
-			_, err = g.destination.Write([]byte(stringPassword + "\n"))
-		} else {
-			_, err = g.destination.Write([]byte(stringPassword))
-		}
+		_, err = w.Write([]byte(stringPassword))
 		if err != nil {
 			return err
 		}
-	}
-	return nil
-}
-
-func (g *Generator) Validate() error {
-	if g.Length > MaxPasswordLength {
-		return fmt.Errorf("the max length should not exceed %d", MaxPasswordLength)
-	}
-	if g.Count > MaxPasswordCount {
-		return fmt.Errorf("the max count should not exceed %d", MaxPasswordCount)
-	}
-	switch g.DestinationType {
-	case ToStdOut:
-		g.destination = os.Stdout
-	case ToFile:
-		// BUG: you called the method "Validate" but you're writing a file.
-		// this can be done at the end when you're about to write the file.
-		passwordFile, err := util.CreateFile(g.Filepath)
-		if err != nil {
-			return errors.New("Error opening file " + g.Filepath)
-		}
-		g.passwordFile = passwordFile
-		g.destination = passwordFile
 	}
 	return nil
 }

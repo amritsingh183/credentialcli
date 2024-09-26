@@ -5,12 +5,11 @@ It was build with love using <https://github.com/spf13/cobra-cli>
 
 ## How to install or create binaries
 
-make sure that you have feteched all tags from the git repo.
-
 <!-- FIXME: why do you care about Git tags? -->
-```shell
+<!-- [x] This tag is needed by Makefile to generate binary, let me remove this and just let makefile fetch the tags-->
+<!-- ```shell
 git fetch --all --tags
-```
+``` -->
 
 To install, simply run
 
@@ -31,7 +30,9 @@ This will create binaries for Darwin-linux, Linux-amd64, Linux-arm64 in `./out/b
 
 ## How to run tests
 
-To run the tests from the code, simply run
+To run the tests from the code, simply run the below command.
+Make sure to remove the default password file `passwords.txt` , if it already exists.
+For safety, the code will not remove an exising file, matching the default password-file name
 
 ```shell
 make test
@@ -53,15 +54,13 @@ credential password
 
 ### Available options for generating passwords
 
-<!-- Done adding examples -->
+<!-- [x] Done adding examples -->
 
 - Length of the password(s) can be specified using `length=8` forexample
 - To dump the password(s) to console set `output=0`
 - To dump the password(s) to file set `output=1` and set filepath using `file=/your/filepath`
 - To control the number of passwords use `count=20` for example
 - If you want to include special characters in your passwords(recommended) use the `includeSpecialCharacters true` flag
-- For some reason if you need to generate URL-safe/Base64Encoded passwords (Never ever send passwords in URLs)
-use `urlSafe=true`
 
 Some examples to run the utility( Assuming you have put `credential` in your $PATH)
 
@@ -75,7 +74,7 @@ Some examples to run the utility( Assuming you have put `credential` in your $PA
   - length=7
   - output=terminal
   - includeSpecialCharacters=true
-  - urlSafe=False
+  - count=1
 
 - To generate a password with specified length and output to default file `./passwords.txt`
 
@@ -95,15 +94,10 @@ Some examples to run the utility( Assuming you have put `credential` in your $PA
     credential password --length=40 --count=10
     ```
 
-- To generate 10 URL safe passwords with specified length and output to console
-
-    ```shell
-    credential password --length=40 --count=10 --urlSafe=true
-    ```
-
 ### How to run/test it without installing
 <!-- FIXME: this is outdated. -->
-Simply replace `~/go/bin/credential` with `go run cmd/credential/main.go` and you can try everything described above.
+<!-- [x] updated it -->
+Simply replace `~/go/bin/credential` with `go run main.go` and you can try everything described above.
 
 ## New Requirements
 

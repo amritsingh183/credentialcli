@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"amritsingh183/credentialcli/internal/password"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // FIXME: there is no MaxLength() function in the source code.
@@ -14,6 +16,7 @@ import (
 // Use something like "testify/suite" to tidy things up.
 // [x] Renamed it to better represent the relationship => Wrong
 // FIXME: you're testing the Cobra CLI commands here. IMHO, you should have also tested the method Generator.Generate which is harder to test since it's a method and not a function
+// [x] Makes sense. internal/password now has all the relevant tests
 func TestRunPasswordGenerator(t *testing.T) {
 	t.Run("Should error if password exceeds max length", func(t *testing.T) {
 		passwordCmd.SetOutput(os.Stdout)
@@ -22,14 +25,13 @@ func TestRunPasswordGenerator(t *testing.T) {
 		})
 		passwordCmd.DebugFlags()
 		_, err := passwordCmd.ExecuteC()
-		fmt.Println(err)
-		if err == nil {
-			t.Errorf("Should not allow length greater than %d", password.MaxPasswordLength)
-		}
+		msg := fmt.Sprintf("Should not allow length greater than %d", password.MaxPasswordLength)
+		assert.Error(t, err, msg)
 	})
 
 	// FIXME: fix this test. If you stick to interface you can write the password to an in-memory structure and then check it for data.
 	// The same applies for the next test functions.
+	// [x] Generate writes either to file or stdout. here in this file I have used OS's temp dir as output. Do you see an issue with this approach? another option is to use stdout like internal/password/password_test.go.TestWrite test case 1
 	t.Run("Should respect the length flag", func(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
@@ -43,17 +45,12 @@ func TestRunPasswordGenerator(t *testing.T) {
 		})
 		passwordCmd.DebugFlags()
 		_, err := passwordCmd.ExecuteC()
-		if err != nil {
-			t.Errorf("Unexpected error %s", err)
-		}
+		assert.NoError(t, err)
 		buff, err := os.ReadFile(passwdFilePath)
-		if err != nil {
-			t.Error(err)
-		}
+		assert.NoError(t, err)
 		passwd := string(buff)
-		if len(passwd) != passwdLength {
-			t.Errorf("The %s is not of length %d", passwd, passwdLength)
-		}
+		msg := fmt.Sprintf("The %s is not of length %d", passwd, passwdLength)
+		assert.Equal(t, passwdLength, len(passwd), msg)
 	})
 
 	t.Run("Should respect the count flag", func(t *testing.T) {
@@ -71,13 +68,9 @@ func TestRunPasswordGenerator(t *testing.T) {
 		})
 		passwordCmd.DebugFlags()
 		_, err := passwordCmd.ExecuteC()
-		if err != nil {
-			t.Errorf("Unexpected error %s", err)
-		}
+		assert.NoError(t, err)
 		pFile, err := os.Open(passwdFilePath)
-		if err != nil {
-			t.Error(err)
-		}
+		assert.NoError(t, err)
 		defer pFile.Close()
 		scanner := bufio.NewScanner(pFile)
 		var (
@@ -87,14 +80,11 @@ func TestRunPasswordGenerator(t *testing.T) {
 		for scanner.Scan() {
 			count = count + 1
 			passwrd = string(scanner.Bytes())
-			if len(passwrd) != passwdLength {
-				t.Errorf("The %s is not of length %d", passwrd, passwdLength)
-			}
+			msg := fmt.Sprintf("The %s is not of length %d", passwrd, passwdLength)
+			assert.Equal(t, passwdLength, len(passwrd), msg)
 		}
-		fmt.Println("Password count", count)
-		if count != requiredCount {
-			t.Errorf("Should have generated %d passwords", requiredCount)
-		}
+		msg := fmt.Sprintf("Should have generated %d passwords", requiredCount)
+		assert.Equal(t, count, requiredCount, msg)
 	})
 
 	t.Run("Should not allow more than maxcount passwords", func(t *testing.T) {
@@ -110,8 +100,7 @@ func TestRunPasswordGenerator(t *testing.T) {
 		})
 		passwordCmd.DebugFlags()
 		_, err := passwordCmd.ExecuteC()
-		if err == nil {
-			t.Errorf("Should have generated %d passwords", requiredCount)
-		}
+		msg := fmt.Sprintf("Should have generated %d passwords", requiredCount)
+		assert.Error(t, err, msg)
 	})
 }
