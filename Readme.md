@@ -1,6 +1,6 @@
-# About the Credential utility
+# About the password utility
 
-This CLI utility exposes the following commands which can be used to generate credentials like password(s).
+This CLI utility exposes the following commands which can be used to generate password(s).
 It was build with love using <https://github.com/spf13/cobra-cli>
 
 ## How to install or create binaries
@@ -17,8 +17,8 @@ To install, simply run
 make install
 ```
 
-this will create a binary file named `credential` in your $GOPATH.
-You may add $GOPATH to your $PATH to run the `credential` utility
+this will create a binary file named `password` in your $GOPATH.
+You may add $GOPATH to your $PATH to run the `password` utility
 
 To build binaries for distribution, simply run
 
@@ -43,13 +43,13 @@ make test
 To generate a password run the following command
 
 ```shell
-~/go/bin/credential password
+~/go/bin/password generate
 ```
 
-or if you have the `credential` in your $PATH
+or if you have the `password` in your $PATH
 
 ```shell
-credential password
+password generate
 ```
 
 ### Available options for generating passwords
@@ -62,12 +62,12 @@ credential password
 - To control the number of passwords use `count=20` for example
 - If you want to include special characters in your passwords(recommended) use the `includeSpecialCharacters true` flag
 
-Some examples to run the utility( Assuming you have put `credential` in your $PATH)
+Some examples to run the utility( Assuming you have put `password` in your $PATH)
 
 - To generate a password with default options
 
     ```shell
-    credential password
+    password generate
     ```
 
   where the default options are:
@@ -79,25 +79,25 @@ Some examples to run the utility( Assuming you have put `credential` in your $PA
 - To generate a password with specified length and output to default file `./passwords.txt`
 
     ```shell
-    credential password --length=40 --output=1 
+    password generate --length=40 --output=1 
     ```
 
 - To generate 10 passwords with specified length and output to specific file `./myPassword.txt`
 
     ```shell
-    credential password --length=40 --output=1 --count=10 --file=./myPassword.txt
+    password generate --length=40 --output=1 --count=10 --file=./myPassword.txt
     ```
 
 - To generate 10 passwords with specified length and output to console
 
     ```shell
-    credential password --length=40 --count=10
+    password generate --length=40 --count=10
     ```
 
 ### How to run/test it without installing
 <!-- FIXME: this is outdated. -->
 <!-- [x] updated it -->
-Simply replace `~/go/bin/credential` with `go run main.go` and you can try everything described above.
+Simply replace `~/go/bin/password` with `go run main.go` and you can try everything described above.
 
 ## New Requirements
 <!-- [x] Not started yet -->

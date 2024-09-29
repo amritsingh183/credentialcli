@@ -1,4 +1,4 @@
-module amritsingh183/credentialcli
+module amritsingh183/password
 
 go 1.22.0
 

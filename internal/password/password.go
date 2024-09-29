@@ -1,7 +1,7 @@
 package password
 
 import (
-	"amritsingh183/credentialcli/internal/util"
+	"amritsingh183/password/internal/util"
 	"errors"
 	"io"
 	"os"

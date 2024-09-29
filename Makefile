@@ -9,7 +9,7 @@ LASTTAG := $(shell git fetch --tags && git describe --abbrev=0 --tags)
 BUILD_FLAGS :=
 
 LDFLAGS := -ldflags "-w -s -X main.version=${VERSION} -extldflags '-static'"
-BINARY := credential-${VERSION}
+BINARY := password-${VERSION}
 
 test:
 	@go test -race ./...

@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"amritsingh183/credentialcli/internal/password"
+	"amritsingh183/password/internal/password"
 
 	"github.com/spf13/cobra"
 )

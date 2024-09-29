@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"amritsingh183/credentialcli/internal/password"
+	"amritsingh183/password/internal/password"
 
 	"github.com/stretchr/testify/assert"
 )

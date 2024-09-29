@@ -1,6 +1,6 @@
 package main
 
-import "amritsingh183/credentialcli/cmd"
+import "amritsingh183/password/cmd"
 
 func main() {
 	cmd.Execute()
