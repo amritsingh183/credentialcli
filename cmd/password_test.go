@@ -19,12 +19,12 @@ import (
 // [x] Makes sense. internal/password now has all the relevant tests
 func TestRunPasswordGenerator(t *testing.T) {
 	t.Run("Should error if password exceeds max length", func(t *testing.T) {
-		passwordCmd.SetOutput(os.Stdout)
-		passwordCmd.SetArgs([]string{
+		generateCmd.SetOutput(os.Stdout)
+		generateCmd.SetArgs([]string{
 			"--length=102",
 		})
-		passwordCmd.DebugFlags()
-		_, err := passwordCmd.ExecuteC()
+		generateCmd.DebugFlags()
+		_, err := generateCmd.ExecuteC()
 		msg := fmt.Sprintf("Should not allow length greater than %d", password.MaxPasswordLength)
 		assert.Error(t, err, msg)
 	})
@@ -35,16 +35,16 @@ func TestRunPasswordGenerator(t *testing.T) {
 	t.Run("Should respect the length flag", func(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
-		passwordCmd.SetOutput(os.Stdout)
+		generateCmd.SetOutput(os.Stdout)
 		passwdLength := 20
-		passwordCmd.SetArgs([]string{
+		generateCmd.SetArgs([]string{
 			"password",
 			fmt.Sprintf("--length=%d", passwdLength),
 			"--output=1",
 			fmt.Sprintf("--file=%s", passwdFilePath),
 		})
-		passwordCmd.DebugFlags()
-		_, err := passwordCmd.ExecuteC()
+		generateCmd.DebugFlags()
+		_, err := generateCmd.ExecuteC()
 		assert.NoError(t, err)
 		buff, err := os.ReadFile(passwdFilePath)
 		assert.NoError(t, err)
@@ -56,18 +56,18 @@ func TestRunPasswordGenerator(t *testing.T) {
 	t.Run("Should respect the count flag", func(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
-		passwordCmd.SetOutput(os.Stdout)
+		generateCmd.SetOutput(os.Stdout)
 		passwdLength := 20
 		requiredCount := 20
-		passwordCmd.SetArgs([]string{
+		generateCmd.SetArgs([]string{
 			"password",
 			"--output=1",
 			fmt.Sprintf("--length=%d", passwdLength),
 			fmt.Sprintf("--count=%d", requiredCount),
 			fmt.Sprintf("--file=%s", passwdFilePath),
 		})
-		passwordCmd.DebugFlags()
-		_, err := passwordCmd.ExecuteC()
+		generateCmd.DebugFlags()
+		_, err := generateCmd.ExecuteC()
 		assert.NoError(t, err)
 		pFile, err := os.Open(passwdFilePath)
 		assert.NoError(t, err)
@@ -90,16 +90,16 @@ func TestRunPasswordGenerator(t *testing.T) {
 	t.Run("Should not allow more than maxcount passwords", func(t *testing.T) {
 		testDir := t.TempDir()
 		passwdFilePath := fmt.Sprintf("%s/pass.txt", testDir)
-		passwordCmd.SetOutput(os.Stdout)
+		generateCmd.SetOutput(os.Stdout)
 		requiredCount := password.MaxPasswordCount + 1
-		passwordCmd.SetArgs([]string{
+		generateCmd.SetArgs([]string{
 			"password",
 			"--output=1",
 			fmt.Sprintf("--count=%d", requiredCount),
 			fmt.Sprintf("--file=%s", passwdFilePath),
 		})
-		passwordCmd.DebugFlags()
-		_, err := passwordCmd.ExecuteC()
+		generateCmd.DebugFlags()
+		_, err := generateCmd.ExecuteC()
 		msg := fmt.Sprintf("Should have generated %d passwords", requiredCount)
 		assert.Error(t, err, msg)
 	})

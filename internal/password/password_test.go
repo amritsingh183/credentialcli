@@ -135,6 +135,7 @@ func TestWrite(t *testing.T) {
 		if _, err := os.Stat(DefaultFilePath); err == nil {
 			t.Fatalf("%s file already exists. Please remove it first to avoid accidental data loss", DefaultFilePath)
 		}
+		defer os.Remove(DefaultFilePath)
 		passwordLength := 40
 		count := 1
 		options := Options{

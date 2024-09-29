@@ -11,9 +11,9 @@ import (
 )
 
 var (
-	passwordCmd = &cobra.Command{
-		Use:     fmt.Sprintf("password [-h] [-v] [%s] [%s] [%s] [%s] [%s]", FlagNameLength, FlagNameIncludeSpecialCharacters, FlagNameOutput, FlagNamePasswordCount, FlagNameFilePath),
-		Aliases: []string{"pass"},
+	generateCmd = &cobra.Command{
+		Use:     fmt.Sprintf("generate [-h] [-v] [%s] [%s] [%s] [%s] [%s]", FlagNameLength, FlagNameIncludeSpecialCharacters, FlagNameOutput, FlagNamePasswordCount, FlagNameFilePath),
+		Aliases: []string{"gen"},
 		Short:   "generate secure passwords",
 		RunE:    runPasswordGenerator,
 	}
@@ -35,31 +35,31 @@ const (
 
 func init() {
 	// Local flags that are only available to this command.
-	passwordCmd.Flags().UintVar(
+	generateCmd.Flags().UintVar(
 		&passwordLength,
 		FlagNameLength,
 		password.DefaultPasswordLength,
 		fmt.Sprintf("How long the passwords should be? (max limit %d)", password.MaxPasswordLength),
 	)
-	passwordCmd.Flags().UintVar(
+	generateCmd.Flags().UintVar(
 		&passwordCount,
 		FlagNamePasswordCount,
 		password.DefaultPasswordCount,
 		fmt.Sprintf("How many passwords to generate? (max limit %d)", password.MaxPasswordCount),
 	)
-	passwordCmd.Flags().BoolVar(
+	generateCmd.Flags().BoolVar(
 		&includeSpecialChars,
 		FlagNameIncludeSpecialCharacters,
 		password.DefaultIncludeSpecialChars,
 		"Whether to include special characters [for example: $ # @ ^]",
 	)
-	passwordCmd.Flags().UintVar(
+	generateCmd.Flags().UintVar(
 		&destinationType,
 		FlagNameOutput,
 		password.DefaultOutput,
 		fmt.Sprintf("Device for dumping the password. %d for console, %d for file (filepath must be specified with %s)", password.ToStdOut, password.ToFile, FlagNameFilePath),
 	)
-	passwordCmd.Flags().StringVar(
+	generateCmd.Flags().StringVar(
 		&destinationFilePath,
 		FlagNameFilePath,
 		password.DefaultFilePath,

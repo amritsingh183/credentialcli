@@ -13,8 +13,8 @@ var version = "0.0.1"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:     "credential",
-	Short:   "credential is a utility to generate credentials",
+	Use:     "password",
+	Short:   "password is a utility to generate passwords",
 	Long:    "",
 	Version: version,
 }
@@ -24,7 +24,7 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.SetOutput(os.Stdout)
 
-	rootCmd.AddCommand(passwordCmd)
+	rootCmd.AddCommand(generateCmd)
 	// Execute the Cobra command tree, parsing args and identifying the command
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
