@@ -24,12 +24,12 @@ out/bin/${BINARY}.gz: out/bin/${BINARY}-amd64 out/bin/${BINARY}-arm64 out/bin/${
 
 out/bin/${BINARY}-amd64:
 	@mkdir -p ./out/bin
-	@GOOS=linux GOARCH=amd64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-amd64
+	@GOOS=linux GOARCH=amd64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-linux-amd64
 
 out/bin/${BINARY}-arm64:
 	@mkdir -p ./out/bin
-	@GOOS=linux GOARCH=arm64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-arm64
+	@GOOS=linux GOARCH=arm64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-linux-arm64
 
 out/bin/${BINARY}-darwin:
 	@mkdir -p ./out/bin
-	@GOOS=darwin GOARCH=amd64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-darwin
+	@GOOS=darwin GOARCH=amd64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-darwin-amd64
