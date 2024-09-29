@@ -3,7 +3,7 @@
 This CLI utility exposes the following commands which can be used to generate password(s).
 It was build with love using <https://github.com/spf13/cobra-cli>
 
-## How to install or create binaries
+## How to install
 
 <!-- FIXME: why do you care about Git tags? -->
 <!-- [x] This tag is needed by Makefile to generate binary, let me remove this and just let makefile fetch the tags-->
@@ -11,14 +11,26 @@ It was build with love using <https://github.com/spf13/cobra-cli>
 git fetch --all --tags
 ``` -->
 
-To install, simply run
+### Method 1: Using released version of the binary
+
+Download a released version of the binary from the releases page <https://github.com/amritsingh183/credentialcli/releases> and add the binary to your path. Assuming that you have renamed the downloaded binary as `password` and then added it to your path, you can
+
+Generate a password using following command
+
+```shell
+password generate
+```
+
+### Method 2: Building from source
+
+Assuming you have `go` installed on your system, clone this repository and then run
 
 ```shell
 make install
 ```
 
-this will create a binary file named `password` in your $GOPATH.
-You may add $GOPATH to your $PATH to run the `password` utility
+this will create a binary file named `password` in your $GOBIN.
+You may add $GOBIN to your $PATH to run the `password` utility
 
 To build binaries for distribution, simply run
 
@@ -26,7 +38,7 @@ To build binaries for distribution, simply run
 make binary
 ```
 
-This will create binaries for Darwin-linux, Linux-amd64, Linux-arm64 in `./out/bin`
+This will create binaries for Darwin-amd64, Linux-amd64, Linux-arm64 in `./out/bin` (same as method 1)
 
 ## How to run tests
 
@@ -40,17 +52,15 @@ make test
 
 ## How to run this utility
 
-To generate a password run the following command
-
-```shell
-~/go/bin/password generate
-```
-
-or if you have the `password` in your $PATH
+If you have followed the [Installation instructions](#how-to-install), you can run the utility as:
 
 ```shell
 password generate
 ```
+
+this will generate password with default options.
+
+See the next section for available options
 
 ### Available options for generating passwords
 
@@ -100,11 +110,14 @@ Some examples to run the utility( Assuming you have put `password` in your $PATH
 Simply replace `~/go/bin/password` with `go run main.go` and you can try everything described above.
 
 ## New Requirements
-<!-- [x] Not started yet -->
+
 The next you're asked is to create a hierarchy of commands in this way:
 
+<!-- [x] Done -->
 - `password` is the master command
+  <!-- [x] Done -->
   - `generate` is the actual command to generate the password
+  <!-- [x] Not started yet -->
   - `validate` checks the password against a predefined set of rules and shares those with the user.
 
 Everything else that has not been defined is up to you.
