@@ -41,10 +41,12 @@ func Write(data [][]byte, o *Options) error {
 	var err error
 	switch o.DestinationType {
 	case ToFile:
-		w, err = os.OpenFile(o.Filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+		passwdFile, err := os.OpenFile(o.Filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 		if err != nil {
 			return errors.New("Error opening file " + o.Filepath)
 		}
+		defer passwdFile.Close()
+		w = passwdFile
 	case ToStdOut:
 		w = os.Stdout
 	}
