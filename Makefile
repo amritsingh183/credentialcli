@@ -20,7 +20,7 @@ install:
 binary: out/bin/${BINARY}.gz
 
 out/bin/${BINARY}.gz: out/bin/${BINARY}-amd64 out/bin/${BINARY}-arm64 out/bin/${BINARY}-darwin
-	@tar --strip-components 2 -czvf out/bin/${BINARY}.tar.gz out/bin/${BINARY}-amd64 out/bin/${BINARY}-arm64 out/bin/${BINARY}-darwin
+	@tar --strip-components 2 -czvf out/bin/${BINARY}.tar.gz out/bin/${BINARY}-linux-amd64 out/bin/${BINARY}-linux-arm64 out/bin/${BINARY}-darwin-amd64
 
 out/bin/${BINARY}-amd64:
 	@mkdir -p ./out/bin
