@@ -32,4 +32,4 @@ jobs:
       with:
           body_path: CHANGELOG.txt
           files: |
-            ./out/bin/password-${{ github.ref }}-*
+            ./out/bin/password-${{ github.ref.tags.latest }}-*
