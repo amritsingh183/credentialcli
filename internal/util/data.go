@@ -1,14 +1,11 @@
 package util
 
 import (
-	"bytes"
 	cryptoRand "crypto/rand"
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
 	mathRand "math/rand"
-	"os"
 )
 
 var srcForMathRand mathRand.Source
@@ -43,14 +40,8 @@ func assertAvailablePRNG(n uint) {
 
 // GenerateShortID generates a password or a cryptographic key
 func GenerateKey(n int, includeSpecials bool) ([]byte, error) {
-	if n > MaxKeyLength {
-		return nil, fmt.Errorf("key can not exceed length=%d", MaxKeyLength)
-	}
-	if n < MinKeyLength {
-		return nil, fmt.Errorf("key can not be smaller than length=%d", MinKeyLength)
-	}
-	if n == 0 {
-		return nil, errors.New("key can not of length=0")
+	if err := IsValidKeyLength(n); err != nil {
+		return nil, err
 	}
 	if includeSpecials {
 		var b1, b2 []byte
@@ -68,54 +59,16 @@ func GenerateKey(n int, includeSpecials bool) ([]byte, error) {
 	}
 }
 
-// TapStdOut provides mechanism to tap into the stdout
-type TapStdOut struct {
-	outChan chan string
-	errChan chan error
-
-	writeTo      *os.File
-	stdOutbackup *os.File
-}
-
-// Start starts the tapping process and backsup stdout
-func (tapper *TapStdOut) Start() error {
-	tapper.stdOutbackup = os.Stdout
-	rf, wf, err := os.Pipe()
-	if err != nil {
-		return err
+// isValid validates the length of key to be generated
+func IsValidKeyLength(n int) error {
+	if n > MaxKeyLength {
+		return fmt.Errorf("maximum key length is %d but %d was provided", MaxKeyLength, n)
 	}
-	os.Stdout = wf
-	tapper.writeTo = wf
-	tapper.outChan = make(chan string)
-	tapper.errChan = make(chan error)
-	go tapper.read(rf)
+	if n < MinKeyLength {
+		return fmt.Errorf("minimum key length is %d but %d was provided", MinKeyLength, n)
+	}
 	return nil
 }
-
-// read reads from readpipe into channel of tapper
-// must be called in a go routine to prevent
-// blocking writes to writepipe (such as stdout)
-func (tapper *TapStdOut) read(readFrom *os.File) {
-	var output bytes.Buffer
-	_, err := io.Copy(&output, readFrom)
-	tapper.errChan <- err
-	tapper.outChan <- output.String()
-}
-
-// Flush Stops the tapping process, sends the stored output and restores stdout
-func (tapper *TapStdOut) Flush() (string, error) {
-	err := tapper.writeTo.Close()
-	if err != nil {
-		return "", err
-	}
-	err = <-tapper.errChan
-	if err != nil {
-		return "", err
-	}
-	os.Stdout = tapper.stdOutbackup
-	return <-tapper.outChan, nil
-}
-
 func generate(n int, letterBytes string) ([]byte, error) {
 	randBytes := make([]byte, 10240)
 	_, err := io.ReadFull(cryptoRand.Reader, randBytes)

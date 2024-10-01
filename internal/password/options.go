@@ -38,11 +38,8 @@ type Options struct {
 // Validate vlaidates the options available for
 // password generator
 func (o *Options) Validate() error {
-	if o.Length > MaxPasswordLength {
-		return fmt.Errorf("the max length should not exceed %d", MaxPasswordLength)
-	}
-	if o.Length < util.MinKeyLength {
-		return fmt.Errorf("the length should be >= %d", util.MinKeyLength)
+	if err := util.IsValidKeyLength(int(o.Length)); err != nil {
+		return err
 	}
 	if o.Count > MaxPasswordCount {
 		return fmt.Errorf("the max count should not exceed %d", MaxPasswordCount)

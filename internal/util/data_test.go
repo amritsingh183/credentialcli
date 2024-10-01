@@ -30,10 +30,6 @@ func TestGenerateKey(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, passBytes, "Generated password must be nil")
 		assert.Equal(t, 0, len(passBytes))
-		usPtr := unsafe.Pointer(&passBytes)
-		strPtr := (*string)(usPtr)
-		stringPassword := *strPtr
-		assert.Equal(t, passwordLength, len(stringPassword))
 	})
 
 	t.Run("should not allow passwords longer than the allowed maxlength", func(t *testing.T) {
@@ -42,10 +38,13 @@ func TestGenerateKey(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, passBytes, "Generated password must be nil")
 		assert.Equal(t, 0, len(passBytes))
-		usPtr := unsafe.Pointer(&passBytes)
-		strPtr := (*string)(usPtr)
-		stringPassword := *strPtr
-		assert.Equal(t, 0, len(stringPassword))
+	})
+	t.Run("should not allow passwords less than the min length", func(t *testing.T) {
+		passwordLength := MinKeyLength - 1
+		passBytes, err := GenerateKey(passwordLength, false)
+		assert.Error(t, err)
+		assert.Nil(t, passBytes, "Generated password must be nil")
+		assert.Equal(t, 0, len(passBytes))
 	})
 
 	t.Run("Should respect IncludeSpecialChars=true option ", func(t *testing.T) {

@@ -2,7 +2,9 @@ package password
 
 import (
 	"amritsingh183/password/internal/util"
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"testing"
@@ -95,7 +97,7 @@ func TestGenerate(t *testing.T) {
 
 func TestWrite(t *testing.T) {
 	t.Run("Must write to stdout when asked to do so", func(t *testing.T) {
-		tapper := util.TapStdOut{}
+		tapper := tapStdOut{}
 		tapper.Start()
 		passwordLength := 40
 		count := 1
@@ -163,4 +165,53 @@ func TestWrite(t *testing.T) {
 		assert.Equal(t, passwordLength, len(passwd), msg)
 	})
 
+}
+
+// tapStdOut provides mechanism to tap into the stdout
+// useful for testing only
+type tapStdOut struct {
+	outChan chan string
+	errChan chan error
+
+	writeTo      *os.File
+	stdOutbackup *os.File
+}
+
+// Start starts the tapping process and backsup stdout
+func (tapper *tapStdOut) Start() error {
+	tapper.stdOutbackup = os.Stdout
+	rf, wf, err := os.Pipe()
+	if err != nil {
+		return err
+	}
+	os.Stdout = wf
+	tapper.writeTo = wf
+	tapper.outChan = make(chan string)
+	tapper.errChan = make(chan error)
+	go tapper.read(rf)
+	return nil
+}
+
+// read reads from readpipe into channel of tapper
+// must be called in a go routine to prevent
+// blocking writes to writepipe (such as stdout)
+func (tapper *tapStdOut) read(readFrom *os.File) {
+	var output bytes.Buffer
+	_, err := io.Copy(&output, readFrom)
+	tapper.errChan <- err
+	tapper.outChan <- output.String()
+}
+
+// Flush Stops the tapping process, sends the stored output and restores stdout
+func (tapper *tapStdOut) Flush() (string, error) {
+	err := tapper.writeTo.Close()
+	if err != nil {
+		return "", err
+	}
+	err = <-tapper.errChan
+	if err != nil {
+		return "", err
+	}
+	os.Stdout = tapper.stdOutbackup
+	return <-tapper.outChan, nil
 }
