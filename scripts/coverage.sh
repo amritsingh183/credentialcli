@@ -30,7 +30,7 @@ done
 FILE_LIST=$(ls "$COVERAGE_DIR"/*.cov)
 echo "mode: ${COVER_MODE}" >"${COVERAGE_FILE}"
 for file in ${FILE_LIST}; do
-  echo "copying contents of ${file} into coverage.cov"
+#   echo "copying contents of ${file} into coverage.cov"
   tail -q -n +2 "${file}" >>"${COVERAGE_FILE}"
 done
 

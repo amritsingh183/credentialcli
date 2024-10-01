@@ -3,6 +3,8 @@
 
 ![GitHub CI](https://github.com/amritsingh183/credentialcli/actions/workflows/dev.workflow.yml/badge.svg)
 ![GitHub CI](https://github.com/amritsingh183/credentialcli/actions/workflows/release.workflow.yml/badge.svg)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/amritsingh183/credentialcli?sort=semver)
+
 
 This CLI utility exposes the following commands which can be used to generate password(s).
 It was build with love using <https://github.com/spf13/cobra-cli>
