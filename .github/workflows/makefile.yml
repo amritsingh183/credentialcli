@@ -26,3 +26,15 @@ jobs:
 
     - name: Make release binaries
       run: make binary
+    
+    - name: Upload Binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: pre-built-binaries
+        path: ./out/bin/*
+
+    - name: Upload code coverage file
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage-html-file
+        path: ./out/var/coverage.html
