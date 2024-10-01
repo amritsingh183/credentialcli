@@ -1,7 +1,14 @@
 package main
 
-import "amritsingh183/password/cmd"
+import (
+	"amritsingh183/password/cmd"
+	"os"
+)
 
 func main() {
-	cmd.Execute()
+	err := cmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
+	os.Exit(0)
 }

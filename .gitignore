@@ -1,3 +1,4 @@
 bin
 passwords.txt
 out/
+*.txt
