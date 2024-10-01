@@ -89,6 +89,9 @@ func runPasswordGenerator(cmd *cobra.Command, args []string) error {
 	}
 	logMesg := `generating password(s) with the following options %#v`
 	logger.Printf(logMesg, passOptions)
-	passwords := password.Generate(&passOptions)
+	passwords, err := password.Generate(&passOptions)
+	if err != nil {
+		return err
+	}
 	return password.Write(passwords, &passOptions)
 }

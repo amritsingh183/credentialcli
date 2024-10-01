@@ -18,7 +18,8 @@ func TestGenerate(t *testing.T) {
 			Length: uint(passwordLength),
 			Count:  1,
 		}
-		passwords := Generate(&options)
+		passwords, err := Generate(&options)
+		assert.NoError(t, err)
 		usPtr := unsafe.Pointer(&passwords[0])
 		strPtr := (*string)(usPtr)
 		stringPassword := *strPtr
@@ -32,7 +33,8 @@ func TestGenerate(t *testing.T) {
 			Length: uint(passwordLength),
 			Count:  1,
 		}
-		passwords := Generate(&options)
+		passwords, err := Generate(&options)
+		assert.NoError(t, err)
 		assert.Equal(t, len(passwords), count)
 	})
 	t.Run("Should respect the default count option (case of >1 passwords)", func(t *testing.T) {
@@ -42,7 +44,8 @@ func TestGenerate(t *testing.T) {
 			Length: uint(passwordLength),
 			Count:  uint(count),
 		}
-		passwords := Generate(&options)
+		passwords, err := Generate(&options)
+		assert.NoError(t, err)
 		assert.Equal(t, len(passwords), count)
 	})
 
@@ -54,13 +57,13 @@ func TestGenerate(t *testing.T) {
 			Count:               uint(count),
 			IncludeSpecialChars: true,
 		}
-		passwords := Generate(&options)
+		passwords, err := Generate(&options)
+		assert.NoError(t, err)
 		usPtr := unsafe.Pointer(&passwords[0])
 		strPtr := (*string)(usPtr)
 		stringPassword := *strPtr
 		var specialFound bool
 		for _, c := range stringPassword {
-			// fmt.Println(string(c))
 			if strings.Contains(util.LetterSpecials, string(c)) {
 				specialFound = true
 			}
@@ -75,7 +78,8 @@ func TestGenerate(t *testing.T) {
 			Length: uint(passwordLength),
 			Count:  uint(count),
 		}
-		passwords := Generate(&options)
+		passwords, err := Generate(&options)
+		assert.NoError(t, err)
 		usPtr := unsafe.Pointer(&passwords[0])
 		strPtr := (*string)(usPtr)
 		stringPassword := *strPtr
@@ -100,7 +104,8 @@ func TestWrite(t *testing.T) {
 			Count:           uint(count),
 			DestinationType: ToStdOut,
 		}
-		passwords := Generate(&options)
+		passwords, err := Generate(&options)
+		assert.NoError(t, err)
 		Write(passwords, &options)
 		output, err := tapper.Flush()
 		assert.NoError(t, err)
@@ -119,7 +124,8 @@ func TestWrite(t *testing.T) {
 			DestinationType: ToFile,
 			Filepath:        passwdFilePath,
 		}
-		passwords := Generate(&options)
+		passwords, err := Generate(&options)
+		assert.NoError(t, err)
 		Write(passwords, &options)
 		buff, err := os.ReadFile(passwdFilePath)
 		if err != nil {
@@ -144,7 +150,8 @@ func TestWrite(t *testing.T) {
 			DestinationType: ToFile,
 			Filepath:        DefaultFilePath,
 		}
-		passwords := Generate(&options)
+		passwords, err := Generate(&options)
+		assert.NoError(t, err)
 		Write(passwords, &options)
 		buff, err := os.ReadFile(DefaultFilePath)
 		if err != nil {

@@ -7,7 +7,6 @@ import (
 )
 
 func TestValidate(t *testing.T) {
-
 	t.Run("Should honor MaxPasswordLength", func(t *testing.T) {
 		options := &Options{
 			Length: MaxPasswordLength + 1,

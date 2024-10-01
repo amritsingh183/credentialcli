@@ -4,6 +4,7 @@ import (
 	"bytes"
 	cryptoRand "crypto/rand"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	mathRand "math/rand"
@@ -19,6 +20,8 @@ const (
 	letterIdxBits = 6
 	letterIdxMask = 1<<letterIdxBits - 1
 	letterIdxMax  = 63 / letterIdxBits
+	MaxKeyLength  = 100
+	MinKeyLength  = 7
 )
 
 func init() {
@@ -39,32 +42,30 @@ func assertAvailablePRNG(n uint) {
 }
 
 // GenerateShortID generates a password or a cryptographic key
-func GenerateKey(n int, includeSpecials bool) []byte {
-	letterBytes := LetterBytesAlnum
+func GenerateKey(n int, includeSpecials bool) ([]byte, error) {
+	if n > MaxKeyLength {
+		return nil, fmt.Errorf("key can not exceed length=%d", MaxKeyLength)
+	}
+	if n < MinKeyLength {
+		return nil, fmt.Errorf("key can not be smaller than length=%d", MinKeyLength)
+	}
+	if n == 0 {
+		return nil, errors.New("key can not of length=0")
+	}
 	if includeSpecials {
-		letterBytes = LetterBytesAlnum + LetterSpecials
-	}
-	randBytes := make([]byte, 10240)
-	io.ReadFull(cryptoRand.Reader, randBytes)
-	randSeed := int64(binary.LittleEndian.Uint64(randBytes[:]))
-	srcForMathRand = mathRand.NewSource(randSeed)
-	b := make([]byte, n)
-	cache := srcForMathRand.Int63()
-	remain := letterIdxMax
-	for i := n - 1; i >= 0; {
-		if remain == 0 {
-			cache = srcForMathRand.Int63()
-			remain = letterIdxMax
+		var b1, b2 []byte
+		b1, err := generate(n, LetterBytesAlnum)
+		if err != nil {
+			return nil, err
 		}
-		idx := int(cache & letterIdxMask)
-		if idx < len(letterBytes) {
-			b[i] = letterBytes[idx]
-			i--
+		b2, err = generate(n, LetterSpecials)
+		if err != nil {
+			return nil, err
 		}
-		cache >>= letterIdxBits
-		remain--
+		return append(b1[:n-5], b2[:5]...), nil
+	} else {
+		return generate(n, LetterBytesAlnum)
 	}
-	return b
 }
 
 // TapStdOut provides mechanism to tap into the stdout
@@ -113,4 +114,31 @@ func (tapper *TapStdOut) Flush() (string, error) {
 	}
 	os.Stdout = tapper.stdOutbackup
 	return <-tapper.outChan, nil
+}
+
+func generate(n int, letterBytes string) ([]byte, error) {
+	randBytes := make([]byte, 10240)
+	_, err := io.ReadFull(cryptoRand.Reader, randBytes)
+	if err != nil {
+		return nil, err
+	}
+	randSeed := int64(binary.LittleEndian.Uint64(randBytes[:]))
+	srcForMathRand = mathRand.NewSource(randSeed)
+	b := make([]byte, n)
+	cache := srcForMathRand.Int63()
+	remain := letterIdxMax
+	for i := n - 1; i >= 0; {
+		if remain == 0 {
+			cache = srcForMathRand.Int63()
+			remain = letterIdxMax
+		}
+		idx := int(cache & letterIdxMask)
+		if idx < len(letterBytes) {
+			b[i] = letterBytes[idx]
+			i--
+		}
+		cache >>= letterIdxBits
+		remain--
+	}
+	return b, nil
 }

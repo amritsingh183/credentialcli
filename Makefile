@@ -12,7 +12,7 @@ LDFLAGS := -ldflags "-w -s -X main.version=${VERSION} -extldflags '-static'"
 BINARY := password-${VERSION}
 
 test:
-	@go test -race ./...
+	@go test -v -race ./...
 
 install:
 	@go install ${BUILD_FLAGS} ${LDFLAGS}

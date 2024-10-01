@@ -11,6 +11,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	// useful to see which all flags were passed to the cli
+	debug = false
+)
+
 // FIXME: there is no MaxLength() function in the source code.
 // Keep 1:1 relationship between the test code function and the source code ones.
 // Use something like "testify/suite" to tidy things up.
@@ -23,7 +28,9 @@ func TestRunPasswordGenerator(t *testing.T) {
 		generateCmd.SetArgs([]string{
 			"--length=102",
 		})
-		generateCmd.DebugFlags()
+		if debug {
+			generateCmd.DebugFlags()
+		}
 		_, err := generateCmd.ExecuteC()
 		msg := fmt.Sprintf("Should not allow length greater than %d", password.MaxPasswordLength)
 		assert.Error(t, err, msg)
@@ -43,7 +50,9 @@ func TestRunPasswordGenerator(t *testing.T) {
 			"--output=1",
 			fmt.Sprintf("--file=%s", passwdFilePath),
 		})
-		generateCmd.DebugFlags()
+		if debug {
+			generateCmd.DebugFlags()
+		}
 		_, err := generateCmd.ExecuteC()
 		assert.NoError(t, err)
 		buff, err := os.ReadFile(passwdFilePath)
@@ -66,7 +75,9 @@ func TestRunPasswordGenerator(t *testing.T) {
 			fmt.Sprintf("--count=%d", requiredCount),
 			fmt.Sprintf("--file=%s", passwdFilePath),
 		})
-		generateCmd.DebugFlags()
+		if debug {
+			generateCmd.DebugFlags()
+		}
 		_, err := generateCmd.ExecuteC()
 		assert.NoError(t, err)
 		pFile, err := os.Open(passwdFilePath)
@@ -98,9 +109,11 @@ func TestRunPasswordGenerator(t *testing.T) {
 			fmt.Sprintf("--count=%d", requiredCount),
 			fmt.Sprintf("--file=%s", passwdFilePath),
 		})
-		generateCmd.DebugFlags()
+		if debug {
+			generateCmd.DebugFlags()
+		}
 		_, err := generateCmd.ExecuteC()
-		msg := fmt.Sprintf("Should have generated %d passwords", requiredCount)
+		msg := fmt.Sprintf("Should not allow more than %d passwords", password.MaxPasswordCount)
 		assert.Error(t, err, msg)
 	})
 }

@@ -23,15 +23,19 @@ import (
 // For now, since all the code is for internal use
 // we do not need to make sure that
 // Options.Validate() was called
-func Generate(o *Options) [][]byte {
+func Generate(o *Options) ([][]byte, error) {
 	passwds := make([][]byte, o.Count)
+	var err error
 	for i := 0; i < int(o.Count); i = i + 1 {
-		passwds[i] = util.GenerateKey(int(o.Length), o.IncludeSpecialChars)
+		passwds[i], err = util.GenerateKey(int(o.Length), o.IncludeSpecialChars)
+		if err != nil {
+			return nil, err
+		}
 		if len(o.Delimiter) > 0 {
 			passwds[i] = append(passwds[i], o.Delimiter...)
 		}
 	}
-	return passwds
+	return passwds, nil
 }
 
 // Write writes the password to destination.
