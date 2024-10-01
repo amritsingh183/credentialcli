@@ -11,6 +11,8 @@ BUILD_FLAGS :=
 LDFLAGS := -ldflags "-w -s -X main.version=${VERSION} -extldflags '-static'"
 BINARY := password-${VERSION}
 
+REQUIRED_COVERAGE ?= 80
+
 test:
 	@go test -v -race ./...
 
@@ -33,3 +35,6 @@ out/bin/${BINARY}-arm64:
 out/bin/${BINARY}-darwin:
 	@mkdir -p ./out/bin
 	@GOOS=darwin GOARCH=amd64 go build ${BUILD_FLAGS} ${LDFLAGS} -o out/bin/${BINARY}-darwin-amd64
+
+cover:
+	./scripts/coverage.sh
