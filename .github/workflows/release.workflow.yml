@@ -1,4 +1,4 @@
-name: Makefile CI
+name: Makefile-CI-Release
 
 on:
   push:
@@ -26,26 +26,10 @@ jobs:
     - name: Make release binaries
       run: make binary
 
-    - name: Create release
-      id: create_release
-      uses: actions/create-release@latest
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
-          draft: false
-          prerelease: true
-    
-    - name: Upload Release Asset
-      id: upload-release-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`
-        asset_path: ./out/bin/password-${{ github.ref }}-*
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
+          files: |
+            ./out/bin/password-${{ github.ref }}-*
