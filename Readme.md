@@ -1,6 +1,6 @@
 # CI/CD status
 
-![GitHub CI](https://github.com/amritsingh183/credentialcli/.github/actions/workflows/dev.workflow.yml/badge.svg)
+![GitHub CI](https://github.com/amritsingh183/credentialcli/actions/workflows/dev.workflow.yml/badge.svg)
 
 # About the password utility
 
