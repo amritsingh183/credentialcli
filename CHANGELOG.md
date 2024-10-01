@@ -1,4 +1,8 @@
-# Allowed destinations
+# Changelog
+
+The changes in this new version
+
+## Allowed destinations
 
 - Standard output
 - Local File
