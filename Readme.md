@@ -1,8 +1,9 @@
 
 # About the password utility
 
-[![Makefile-CI-dev](https://github.com/amritsingh183/credentialcli/actions/workflows/dev.workflow.yml/badge.svg)](https://github.com/amritsingh183/credentialcli/actions/workflows/dev.workflow.yml)
-[![Makefile-CI-dev](https://github.com/amritsingh183/credentialcli/actions/workflows/release.workflow.yml/badge.svg)](https://github.com/amritsingh183/credentialcli/actions/workflows/release.workflow.yml)
+[![main-branch](https://github.com/amritsingh183/credentialcli/actions/workflows/main.workflow.yml/badge.svg)](https://github.com/amritsingh183/credentialcli/actions/workflows/main.workflow.yml)
+[![dev-branch](https://github.com/amritsingh183/credentialcli/actions/workflows/dev.workflow.yml/badge.svg)](https://github.com/amritsingh183/credentialcli/actions/workflows/dev.workflow.yml)
+[![release-branch](https://github.com/amritsingh183/credentialcli/actions/workflows/release.workflow.yml/badge.svg)](https://github.com/amritsingh183/credentialcli/actions/workflows/release.workflow.yml)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/amritsingh183/credentialcli?sort=semver)](https://img.shields.io/github/v/release/amritsingh183/credentialcli)
 
 This CLI utility is built for generating password(s).
