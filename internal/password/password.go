@@ -1,11 +1,12 @@
 package password
 
 import (
-	"amritsingh183/password/internal/util"
 	"errors"
 	"io"
 	"os"
 	"unsafe"
+
+	"amritsingh183/password/internal/util"
 )
 
 // // FIXME: let's get rid of this struct. Let's group the parameters of the password generator in another struct with a different name. For the target, you can leverage the interface io.Writer that can be accepted as a parameter of the function that has to write the password somewhere.
@@ -40,6 +41,8 @@ func Generate(o *Options) ([][]byte, error) {
 
 // Write writes the password to destination.
 // It closes the file when destination is a file
+// FIXME: the signature might be: func Write(w io.writer, passwords []string) error {}
+// where io.Writer might be: StdOut, a file handle, a mock, etc.
 func Write(data [][]byte, o *Options) error {
 	var w io.Writer
 	var err error
@@ -56,6 +59,7 @@ func Write(data [][]byte, o *Options) error {
 	}
 	var stringPassword string
 	for _, bytePassword := range data {
+		// [Q]: can you explain me why are you using so often the "unsafe" pkg? It should be used seldomly. Maybe I'm not getting your thoughts.
 		usPtr := unsafe.Pointer(&bytePassword)
 		strPtr := (*string)(usPtr)
 		stringPassword = *strPtr

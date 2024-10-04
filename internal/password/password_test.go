@@ -1,7 +1,6 @@
 package password
 
 import (
-	"amritsingh183/password/internal/util"
 	"bytes"
 	"fmt"
 	"io"
@@ -9,6 +8,8 @@ import (
 	"strings"
 	"testing"
 	"unsafe"
+
+	"amritsingh183/password/internal/util"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -164,11 +165,12 @@ func TestWrite(t *testing.T) {
 		msg := fmt.Sprintf("Expected password to be of length %d", passwordLength)
 		assert.Equal(t, passwordLength, len(passwd), msg)
 	})
-
 }
 
 // tapStdOut provides mechanism to tap into the stdout
 // useful for testing only
+// FIXME:you can easily take advantage of the io.Writer interface and save the values in memory.
+// https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/dependency-injection#write-enough-code-to-make-it-pass
 type tapStdOut struct {
 	outChan chan string
 	errChan chan error
