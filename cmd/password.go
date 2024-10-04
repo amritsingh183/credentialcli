@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	// FIXME: use the log/slog pkg which should be the new standard.
 	"log"
 	"os"
 
@@ -65,7 +66,9 @@ func init() {
 		password.DefaultFilePath,
 		fmt.Sprintf("filepath (when %d is provided for %s)", password.ToFile, FlagNameOutput),
 	)
+	// BUG: use structured logging with Fields and so on
 	logOpts := log.LstdFlags | log.Lshortfile | log.Ldate | log.Ltime | log.LUTC
+	// BUG: `Length:0x7, Count:0x5,` printed on the shell is not user-friendly.
 	logger = log.New(os.Stderr, "password generator: ", logOpts)
 }
 
@@ -89,6 +92,8 @@ func runPasswordGenerator(cmd *cobra.Command, args []string) error {
 	}
 	logMesg := `generating password(s) with the following options %#v`
 	logger.Printf(logMesg, passOptions)
+	// FIXME: here, it makes sense to refactor the code by taking out the "count" from the Options struct.
+	// The Options struct describes the characteristics of the password. The "count" is something else. The Generate function should be invoked as many times as we want from the count and every time must return a single password (to make it more reusable).
 	passwords, err := password.Generate(&passOptions)
 	if err != nil {
 		return err

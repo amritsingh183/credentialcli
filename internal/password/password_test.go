@@ -1,7 +1,6 @@
 package password
 
 import (
-	"amritsingh183/password/internal/util"
 	"bytes"
 	"fmt"
 	"io"
@@ -9,6 +8,8 @@ import (
 	"strings"
 	"testing"
 	"unsafe"
+
+	"amritsingh183/password/internal/util"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -171,5 +172,55 @@ func TestWrite(t *testing.T) {
 		msg := fmt.Sprintf("expected password to be of length %d", passwordLength)
 		assert.Equal(t, passwordLength, len(passwd), msg)
 	})
+}
 
+// tapStdOut provides mechanism to tap into the stdout
+// useful for testing only
+// FIXME:you can easily take advantage of the io.Writer interface and save the values in memory.
+// https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/dependency-injection#write-enough-code-to-make-it-pass
+type tapStdOut struct {
+	outChan chan string
+	errChan chan error
+
+	writeTo      *os.File
+	stdOutbackup *os.File
+}
+
+// Start starts the tapping process and backsup stdout
+func (tapper *tapStdOut) Start() error {
+	tapper.stdOutbackup = os.Stdout
+	rf, wf, err := os.Pipe()
+	if err != nil {
+		return err
+	}
+	os.Stdout = wf
+	tapper.writeTo = wf
+	tapper.outChan = make(chan string)
+	tapper.errChan = make(chan error)
+	go tapper.read(rf)
+	return nil
+}
+
+// read reads from readpipe into channel of tapper
+// must be called in a go routine to prevent
+// blocking writes to writepipe (such as stdout)
+func (tapper *tapStdOut) read(readFrom *os.File) {
+	var output bytes.Buffer
+	_, err := io.Copy(&output, readFrom)
+	tapper.errChan <- err
+	tapper.outChan <- output.String()
+}
+
+// Flush Stops the tapping process, sends the stored output and restores stdout
+func (tapper *tapStdOut) Flush() (string, error) {
+	err := tapper.writeTo.Close()
+	if err != nil {
+		return "", err
+	}
+	err = <-tapper.errChan
+	if err != nil {
+		return "", err
+	}
+	os.Stdout = tapper.stdOutbackup
+	return <-tapper.outChan, nil
 }

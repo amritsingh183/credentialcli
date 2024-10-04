@@ -4,7 +4,6 @@
 # Allow environment variable override for running targets within Dockerfile
 VERSION ?= $(shell git describe --always --dirty --tags | egrep -o '([0-9]+\.){1,2}[0-9]?[a-zA-Z0-9-]+')
 BUILD := $(shell date +%FT%T%z)
-# [x] fetching git tag here
 LASTTAG := $(shell git fetch --tags && git describe --abbrev=0 --tags)
 BUILD_FLAGS :=
 
@@ -14,6 +13,7 @@ BINARY := password-${VERSION}
 REQUIRED_COVERAGE ?= 80
 
 test:
+# FIXME: the "race" flag could be omitted since it's a tool running from CLI
 	@go test -v -race ./...
 
 install:

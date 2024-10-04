@@ -60,6 +60,9 @@ func GenerateKey(n int, includeSpecials bool) ([]byte, error) {
 }
 
 // isValid validates the length of key to be generated
+// TODO: this could also be replaced by some validation pkg.
+// BUG: I'd like to generate unsecure keys. You should allow the users to do so.
+// Maybe, you can print a warning that the password is not secure enough and the reason.
 func IsValidKeyLength(n int) error {
 	if n > MaxKeyLength {
 		return fmt.Errorf("maximum key length is %d but %d was provided", MaxKeyLength, n)
@@ -69,6 +72,9 @@ func IsValidKeyLength(n int) error {
 	}
 	return nil
 }
+
+// TODO: this is really needed? Or we can solve it with an easier way?
+// I mean the key and all of the other stuff. The code will be much more simplified.
 func generate(n int, letterBytes string) ([]byte, error) {
 	randBytes := make([]byte, 10240)
 	_, err := io.ReadFull(cryptoRand.Reader, randBytes)

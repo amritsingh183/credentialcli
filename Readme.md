@@ -11,11 +11,6 @@ It was made with love using <https://github.com/spf13/cobra-cli>
 
 ## How to install
 
-<!-- FIXME: why do you care about Git tags? -->
-<!-- [x] This tag is needed by Makefile to generate binary, let me remove this and just let makefile fetch the tags-->
-<!-- ```shell
-git fetch --all --tags
-``` -->
 There are two ways to install the `password` utility
 
 ### Method 1: Download a pre-built binary
@@ -82,8 +77,6 @@ The purpose of each option is as follows:
 
 If you have followed the [Installation instructions](#how-to-install), you can use the following examples. You can check [All available options](#available-options-for-controlling-the-generated-password).
 
-<!-- [x] Done adding examples -->
-
 - To generate a password with default options
 
     ```shell
@@ -118,18 +111,16 @@ For safety, the code will not remove an exising file, matching the default passw
 make test
 ```
 
-<!-- ### How to test it without installing -->
-<!-- FIXME: this is outdated. -->
-<!-- [x] removing this section-->
-<!-- Simply replace `~/go/bin/password` with `go run main.go` and you can try everything described above. -->
+### How to test it without installing
+<!-- FIXME: I believe this section should be left because someone may want to run it directly in the source code. -->
+<!-- FIXME: you could also include instructions on how to build the command from the source code. -->
+Simply replace `~/go/bin/password` with `go run main.go` and you can try everything described above.
 
 ## New Requirements
 
 The next you're asked is to create a hierarchy of commands in this way:
 
-<!-- [x] Done -->
 - `password` is the master command
-  <!-- [x] Done -->
   - `generate` is the actual command to generate the password
   <!-- [x] Not started yet -->
   - `validate` checks the password against a predefined set of rules and shares those with the user.
