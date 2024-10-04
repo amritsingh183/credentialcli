@@ -168,7 +168,7 @@ func TestWrite(t *testing.T) {
 		}
 		passwd := string(buff)
 		assert.NoError(t, err)
-		msg := fmt.Sprintf("Expected password to be of length %d", passwordLength)
+		msg := fmt.Sprintf("expected password to be of length %d", passwordLength)
 		assert.Equal(t, passwordLength, len(passwd), msg)
 	})
 
