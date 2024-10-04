@@ -98,8 +98,12 @@ func TestGenerate(t *testing.T) {
 
 func TestWrite(t *testing.T) {
 	t.Run("Must write to stdout when asked to do so", func(t *testing.T) {
-		tapper := tapStdOut{}
-		tapper.Start()
+		// setup for tapping into os.Stdout
+		rf, wf, err := os.Pipe()
+		assert.NoError(t, err)
+		backUp := os.Stdout
+		os.Stdout = wf
+		var outbuff bytes.Buffer
 		passwordLength := 40
 		count := 1
 		options := Options{
@@ -110,10 +114,13 @@ func TestWrite(t *testing.T) {
 		passwords, err := Generate(&options)
 		assert.NoError(t, err)
 		Write(passwords, &options)
-		output, err := tapper.Flush()
+		err = wf.Close()
+		os.Stdout = backUp
+		assert.NoError(t, err)
+		_, err = io.Copy(&outbuff, rf)
 		assert.NoError(t, err)
 		msg := fmt.Sprintf("Expected password to be of length %d", passwordLength)
-		assert.Equal(t, passwordLength, len(output), msg)
+		assert.Equal(t, passwordLength, len(outbuff.String()), msg)
 	})
 
 	t.Run("Must write to file when asked to do so", func(t *testing.T) {
@@ -162,7 +169,7 @@ func TestWrite(t *testing.T) {
 		}
 		passwd := string(buff)
 		assert.NoError(t, err)
-		msg := fmt.Sprintf("Expected password to be of length %d", passwordLength)
+		msg := fmt.Sprintf("expected password to be of length %d", passwordLength)
 		assert.Equal(t, passwordLength, len(passwd), msg)
 	})
 }
